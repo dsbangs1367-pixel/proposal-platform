@@ -29,7 +29,9 @@ export async function proxy(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/sign-up')
   const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard') ||
     request.nextUrl.pathname.startsWith('/proposals') ||
-    request.nextUrl.pathname.startsWith('/settings')
+    request.nextUrl.pathname.startsWith('/settings') ||
+    request.nextUrl.pathname.startsWith('/templates') ||
+    (request.nextUrl.pathname.startsWith('/team') && !request.nextUrl.pathname.startsWith('/team/join'))
 
   if (!user && isDashboardRoute) {
     const url = request.nextUrl.clone()

@@ -2,25 +2,43 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { StatusBadge } from '@/components/ui/badge'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import { FileText, Plus, TrendingUp, CheckCircle, DollarSign, Clock } from 'lucide-react'
+import { FileText, Plus, TrendingUp, CheckCircle, Clock, BarChart2 } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: proposals } = await supabase
+  // Fetch all proposals for accurate stats + signatures for avg time
+  const [{ data: allProposals }, { data: signatures }] = await Promise.all([
+    supabase.from('proposals').select('id, status, created_at').eq('user_id', user!.id),
+    supabase
+      .from('signatures')
+      .select('proposal_id, signed_at, proposals!inner(user_id, created_at)')
+      .eq('proposals.user_id', user!.id),
+  ])
+
+  const { data: recentProposals } = await supabase
     .from('proposals')
     .select('*')
     .eq('user_id', user!.id)
     .order('created_at', { ascending: false })
     .limit(10)
 
-  const all = proposals ?? []
-  const stats = {
-    total: all.length,
-    draft: all.filter(p => p.status === 'draft').length,
-    signed: all.filter(p => p.status === 'signed' || p.status === 'paid').length,
-    paid: all.filter(p => p.status === 'paid').length,
+  const all = allProposals ?? []
+  const sent = all.filter(p => p.status !== 'draft').length
+  const signed = all.filter(p => p.status === 'signed' || p.status === 'paid').length
+  const pending = all.filter(p => p.status === 'sent' || p.status === 'viewed').length
+  const conversionRate = sent > 0 ? Math.round((signed / sent) * 100) : 0
+
+  // Average hours from proposal creation to signature
+  let avgDays: number | null = null
+  if (signatures && signatures.length > 0) {
+    const diffs = signatures.map((sig) => {
+      const created = new Date((sig.proposals as { created_at: string }).created_at).getTime()
+      const signedAt = new Date(sig.signed_at).getTime()
+      return (signedAt - created) / (1000 * 60 * 60 * 24)
+    })
+    avgDays = Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)
   }
 
   return (
@@ -42,11 +60,32 @@ export default async function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Total Proposals" value={stats.total} icon={<TrendingUp />} color="indigo" />
-        <StatCard label="Drafts" value={stats.draft} icon={<Clock />} color="gray" />
-        <StatCard label="Signed" value={stats.signed} icon={<CheckCircle />} color="purple" />
-        <StatCard label="Paid" value={stats.paid} icon={<DollarSign />} color="green" />
+        <StatCard label="Total Proposals" value={all.length} icon={<TrendingUp />} color="indigo" />
+        <StatCard label="Awaiting Signature" value={pending} icon={<Clock />} color="blue" />
+        <StatCard label="Signed" value={signed} icon={<CheckCircle />} color="purple" />
+        <StatCard
+          label="Conversion Rate"
+          value={`${conversionRate}%`}
+          icon={<BarChart2 />}
+          color="green"
+          sub={sent > 0 ? `${signed} of ${sent} sent` : 'No proposals sent yet'}
+        />
       </div>
+
+      {/* Avg time to sign */}
+      {avgDays !== null && (
+        <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-6 py-4 mb-8 flex items-center gap-4">
+          <div className="w-9 h-9 bg-indigo-100 rounded-lg flex items-center justify-center shrink-0">
+            <Clock className="w-4 h-4 text-indigo-600" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-indigo-900">
+              Average time to sign: <span className="text-indigo-600">{avgDays} day{avgDays !== 1 ? 's' : ''}</span>
+            </p>
+            <p className="text-xs text-indigo-500 mt-0.5">Based on {signatures?.length} signed proposal{(signatures?.length ?? 0) !== 1 ? 's' : ''}</p>
+          </div>
+        </div>
+      )}
 
       {/* Proposals Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -57,7 +96,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        {all.length === 0 ? (
+        {(recentProposals ?? []).length === 0 ? (
           <div className="text-center py-16">
             <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
               <FileText className="w-6 h-6 text-gray-400" />
@@ -85,7 +124,7 @@ export default async function DashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {all.map(proposal => (
+              {(recentProposals ?? []).map(proposal => (
                 <tr key={proposal.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <p className="font-medium text-gray-900 text-sm">{proposal.title}</p>
@@ -124,16 +163,17 @@ export default async function DashboardPage() {
 }
 
 function StatCard({
-  label, value, icon, color,
+  label, value, icon, color, sub,
 }: {
   label: string
-  value: number
+  value: number | string
   icon: React.ReactNode
-  color: 'indigo' | 'gray' | 'purple' | 'green'
+  color: 'indigo' | 'blue' | 'purple' | 'green'
+  sub?: string
 }) {
   const colors = {
     indigo: 'bg-indigo-50 text-indigo-600',
-    gray: 'bg-gray-100 text-gray-600',
+    blue: 'bg-blue-50 text-blue-600',
     purple: 'bg-purple-50 text-purple-600',
     green: 'bg-green-50 text-green-600',
   }
@@ -144,6 +184,7 @@ function StatCard({
       </div>
       <p className="text-2xl font-bold text-gray-900">{value}</p>
       <p className="text-sm text-gray-500 mt-0.5">{label}</p>
+      {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
     </div>
   )
 }

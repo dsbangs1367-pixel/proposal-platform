@@ -12,12 +12,14 @@ import {
   LogOut,
   Plus,
   Layers,
+  Users,
 } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/proposals', label: 'Proposals', icon: FileText },
   { href: '/templates', label: 'Templates', icon: Layers },
+  { href: '/team', label: 'Team', icon: Users },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
 

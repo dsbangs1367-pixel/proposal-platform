@@ -28,6 +28,7 @@ export function statusColor(status: string) {
     case 'viewed': return 'bg-yellow-100 text-yellow-700'
     case 'signed': return 'bg-purple-100 text-purple-700'
     case 'paid': return 'bg-green-100 text-green-700'
+    case 'expired': return 'bg-orange-100 text-orange-700'
     default: return 'bg-gray-100 text-gray-700'
   }
 }

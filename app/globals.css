@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* ─── PDF Print ─────────────────────────────────────────── */
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  body { background: white !important; }
+  @page { margin: 15mm 18mm; size: A4; }
+}
+.print-only { display: none; }
+
 /* react-colorful overrides */
 .react-colorful { width: 220px !important; height: 220px !important; border-radius: 12px; }
 .react-colorful__saturation { border-radius: 10px 10px 0 0; }

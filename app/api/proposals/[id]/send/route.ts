@@ -28,12 +28,17 @@ export async function POST(
       .single()
 
     if (proposal.client_email) {
+      const baseUrl = profile?.custom_domain
+        ? `https://${profile.custom_domain}`
+        : undefined
       await sendProposalToClient({
         clientEmail: proposal.client_email,
         clientName: proposal.client_name || 'there',
         senderCompany: profile?.company_name ?? 'ProposalFlow',
         proposalTitle: proposal.title,
         publicToken: proposal.public_token,
+        brandColor: profile?.brand_color,
+        baseUrl,
       })
     }
 

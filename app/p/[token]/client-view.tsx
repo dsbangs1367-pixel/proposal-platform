@@ -8,7 +8,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import { SignaturePad } from '@/components/proposal/signature-pad'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import type { Proposal, Signature, Profile } from '@/lib/types'
-import { CheckCircle, MapPin, Phone, Globe, FileText } from 'lucide-react'
+import { CheckCircle, MapPin, Phone, Globe, FileText, Download } from 'lucide-react'
 
 interface Props {
   proposal: Proposal
@@ -100,7 +100,16 @@ export function ClientProposalView({ proposal, signature: initialSig, senderProf
         {/* Proposal meta bar */}
         <div className="max-w-4xl mx-auto px-8 py-3 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
           <span>Prepared for <strong className="text-gray-900">{proposal.client_name}</strong></span>
-          <span>{formatDate(proposal.created_at)}</span>
+          <div className="flex items-center gap-4">
+            <span>{formatDate(proposal.created_at)}</span>
+            <button
+              onClick={() => window.print()}
+              className="no-print inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-800 transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Download PDF
+            </button>
+          </div>
         </div>
       </header>
 
@@ -167,12 +176,12 @@ export function ClientProposalView({ proposal, signature: initialSig, senderProf
                 )}
               </div>
             ) : (
-              <>
+              <div className="no-print">
                 <p className="text-gray-500 text-sm mb-6">
                   By signing below, you confirm that you have read and agree to the terms of this proposal.
                 </p>
                 <SignaturePad onSign={handleSign} brandColor={brand} />
-              </>
+              </div>
             )}
           </div>
         </div>

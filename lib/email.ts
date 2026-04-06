@@ -10,28 +10,63 @@ export async function sendProposalToClient({
   senderCompany,
   proposalTitle,
   publicToken,
+  brandColor = '#4f46e5',
+  baseUrl,
 }: {
   clientEmail: string
   clientName: string
   senderCompany: string
   proposalTitle: string
   publicToken: string
+  brandColor?: string
+  baseUrl?: string
 }) {
-  const link = `${APP_URL}/p/${publicToken}`
+  const link = `${baseUrl ?? APP_URL}/p/${publicToken}`
   await resend.emails.send({
     from: FROM,
     to: clientEmail,
     subject: `${senderCompany} sent you a proposal: ${proposalTitle}`,
     html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border-top: 4px solid ${brandColor}; padding-top: 24px;">
         <h2 style="color: #1a1a2e;">You have a new proposal</h2>
         <p>Hi ${clientName},</p>
         <p><strong>${senderCompany}</strong> has sent you a proposal titled <strong>"${proposalTitle}"</strong>.</p>
-        <p>Click the button below to view, sign, and pay.</p>
-        <a href="${link}" style="display:inline-block;background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
-          View Proposal
+        <p>Click the button below to read and sign.</p>
+        <a href="${link}" style="display:inline-block;background:${brandColor};color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
+          View &amp; Sign Proposal
         </a>
         <p style="color:#666;font-size:12px;">Or copy this link: ${link}</p>
+      </div>
+    `,
+  })
+}
+
+export async function sendViewedNotification({
+  ownerEmail,
+  ownerName,
+  clientName,
+  proposalTitle,
+  proposalId,
+}: {
+  ownerEmail: string
+  ownerName: string
+  clientName: string
+  proposalTitle: string
+  proposalId: string
+}) {
+  await resend.emails.send({
+    from: FROM,
+    to: ownerEmail,
+    subject: `👀 ${clientName} opened your proposal`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color:#1a1a2e;">Proposal Viewed</h2>
+        <p>Hi ${ownerName},</p>
+        <p><strong>${clientName}</strong> has opened your proposal <strong>"${proposalTitle}"</strong>.</p>
+        <p style="color:#666;font-size:13px;">They haven't signed yet — you'll get another notification when they do.</p>
+        <a href="${APP_URL}/proposals/${proposalId}" style="display:inline-block;background:#0ea5e9;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
+          View Proposal
+        </a>
       </div>
     `,
   })
@@ -62,6 +97,37 @@ export async function sendSignedNotification({
         <a href="${APP_URL}/proposals/${proposalId}" style="display:inline-block;background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
           View Proposal
         </a>
+      </div>
+    `,
+  })
+}
+
+export async function sendTeamInvite({
+  inviteEmail,
+  inviterName,
+  teamName,
+  inviteToken,
+}: {
+  inviteEmail: string
+  inviterName: string
+  teamName: string
+  inviteToken: string
+}) {
+  const link = `${APP_URL}/team/join?token=${inviteToken}`
+  await resend.emails.send({
+    from: FROM,
+    to: inviteEmail,
+    subject: `${inviterName} invited you to join ${teamName} on ProposalFlow`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color:#1a1a2e;">You've been invited</h2>
+        <p>Hi there,</p>
+        <p><strong>${inviterName}</strong> has invited you to join the team <strong>"${teamName}"</strong> on ProposalFlow.</p>
+        <p>Click below to accept the invitation and set up your account.</p>
+        <a href="${link}" style="display:inline-block;background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
+          Accept Invitation
+        </a>
+        <p style="color:#666;font-size:12px;">This invitation expires in 7 days.</p>
       </div>
     `,
   })

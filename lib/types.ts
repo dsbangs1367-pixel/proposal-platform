@@ -1,4 +1,4 @@
-export type ProposalStatus = 'draft' | 'sent' | 'viewed' | 'signed' | 'paid'
+export type ProposalStatus = 'draft' | 'sent' | 'viewed' | 'signed' | 'paid' | 'expired'
 
 export interface Profile {
   id: string
@@ -9,6 +9,7 @@ export interface Profile {
   company_phone: string | null
   company_website: string | null
   brand_color: string
+  custom_domain: string | null
   plan: 'free' | 'pro'
   created_at: string
 }
@@ -48,6 +49,25 @@ export interface Payment {
   currency: string
   status: 'pending' | 'successful' | 'failed'
   paid_at: string | null
+}
+
+export interface Team {
+  id: string
+  name: string
+  owner_id: string
+  created_at: string
+}
+
+export interface TeamMember {
+  id: string
+  team_id: string
+  user_id: string | null
+  invite_email: string
+  role: 'admin' | 'member'
+  status: 'pending' | 'active'
+  invite_token: string
+  invited_at: string
+  joined_at: string | null
 }
 
 export interface Template {

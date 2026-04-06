@@ -17,6 +17,7 @@ export default function SettingsPage() {
   const [companyPhone, setCompanyPhone] = useState('')
   const [companyWebsite, setCompanyWebsite] = useState('')
   const [brandColor, setBrandColor] = useState('#4f46e5')
+  const [customDomain, setCustomDomain] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -36,6 +37,7 @@ export default function SettingsPage() {
           setCompanyPhone(data.company_phone ?? '')
           setCompanyWebsite(data.company_website ?? '')
           setBrandColor(data.brand_color ?? '#4f46e5')
+          setCustomDomain(data.custom_domain ?? '')
         }
       })
     })
@@ -52,6 +54,7 @@ export default function SettingsPage() {
       company_phone: companyPhone,
       company_website: companyWebsite,
       brand_color: brandColor,
+      custom_domain: customDomain.trim() || null,
     }).eq('id', profile.id)
     setSaving(false)
     setSaved(true)
@@ -209,6 +212,34 @@ export default function SettingsPage() {
           </div>
           <Button onClick={handleSave} disabled={saving} className="mt-5">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</> : saved ? <><Check className="w-4 h-4 mr-2" />Saved!</> : 'Save Changes'}
+          </Button>
+        </div>
+
+        {/* Custom domain */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="font-semibold text-gray-900 mb-1">Custom Domain</h2>
+          <p className="text-sm text-gray-500 mb-4">Proposal links will use your domain instead of the default URL</p>
+          <div className="space-y-1.5">
+            <Label>Domain</Label>
+            <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+              <span className="px-3 py-2 text-sm text-gray-400 bg-gray-50 border-r border-gray-300">https://</span>
+              <Input
+                value={customDomain}
+                onChange={e => setCustomDomain(e.target.value)}
+                placeholder="proposals.yourcompany.com"
+                className="border-0 rounded-none focus-visible:ring-0"
+              />
+            </div>
+          </div>
+          <div className="mt-4 bg-blue-50 border border-blue-100 rounded-lg p-4 text-xs text-blue-700 space-y-1">
+            <p className="font-semibold">DNS Setup Instructions</p>
+            <p>1. Go to your domain registrar (e.g. Namecheap, GoDaddy)</p>
+            <p>2. Add a CNAME record: <code className="bg-blue-100 px-1 rounded">proposals</code> → <code className="bg-blue-100 px-1 rounded">cname.vercel-dns.com</code></p>
+            <p>3. In Vercel: Project → Settings → Domains → add your domain</p>
+            <p>4. Save this page once DNS is verified</p>
+          </div>
+          <Button onClick={handleSave} disabled={saving} className="mt-4">
+            {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</> : saved ? <><Check className="w-4 h-4 mr-2" />Saved!</> : 'Save Domain'}
           </Button>
         </div>
 

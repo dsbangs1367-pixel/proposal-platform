@@ -47,6 +47,7 @@ export default function ProposalEditorPage({ params }: { params: Promise<{ id: s
       client_email: proposal.client_email,
       amount: proposal.amount,
       currency: proposal.currency,
+      expires_at: proposal.expires_at || null,
       content,
     }).eq('id', id)
     setSaving(false)
@@ -194,6 +195,15 @@ export default function ProposalEditorPage({ params }: { params: Promise<{ id: s
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-1.5">
+              <Label>Expiry Date</Label>
+              <Input
+                type="date"
+                value={proposal.expires_at ? proposal.expires_at.slice(0, 10) : ''}
+                onChange={e => setProposal(p => p ? { ...p, expires_at: e.target.value ? new Date(e.target.value).toISOString() : null } : p)}
+              />
+              <p className="text-xs text-gray-400">Client cannot sign after this date.</p>
+            </div>
           </div>
         </div>
 
@@ -224,8 +234,9 @@ export default function ProposalEditorPage({ params }: { params: Promise<{ id: s
             {proposal.status === 'draft' && 'Click "Send to Client" to email the proposal link.'}
             {proposal.status === 'sent' && 'Awaiting client review.'}
             {proposal.status === 'viewed' && 'Client has opened the proposal.'}
-            {proposal.status === 'signed' && 'Client has signed. Awaiting payment.'}
+            {proposal.status === 'signed' && 'Client has signed. Proposal complete.'}
             {proposal.status === 'paid' && 'Payment received. All done!'}
+            {proposal.status === 'expired' && 'This proposal has passed its expiry date.'}
           </p>
         </div>
       </div>
