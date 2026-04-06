@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import '@/app/p/proposal-client.css'
 import { ClientProposalView } from './client-view'
 import { ExpiredView } from './expired-view'
 import { sendViewedNotification } from '@/lib/email'

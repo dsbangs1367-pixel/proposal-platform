@@ -34,7 +34,7 @@ export default async function DashboardPage() {
   let avgDays: number | null = null
   if (signatures && signatures.length > 0) {
     const diffs = signatures.map((sig) => {
-      const created = new Date((sig.proposals as { created_at: string }).created_at).getTime()
+      const created = new Date((sig.proposals as unknown as { created_at: string }).created_at).getTime()
       const signedAt = new Date(sig.signed_at).getTime()
       return (signedAt - created) / (1000 * 60 * 60 * 24)
     })

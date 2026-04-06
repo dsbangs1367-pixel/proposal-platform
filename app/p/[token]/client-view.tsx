@@ -61,11 +61,7 @@ export function ClientProposalView({ proposal, signature: initialSig, senderProf
   ]
 
   return (
-    <div
-      className="min-h-screen proposal-client"
-      // CSS variable lets globals.css use the brand colour inside .proposal-content
-      style={{ '--proposal-brand': brand } as React.CSSProperties}
-    >
+    <div className="min-h-screen proposal-client">
 
       {/* ═══════════════════════════════════════════
           COVER PAGE
@@ -192,6 +188,7 @@ export function ClientProposalView({ proposal, signature: initialSig, senderProf
         {/* Proposal body content */}
         <div className="content-card">
           <div className="content-card-accent" style={{ backgroundColor: brand }} />
+          <style>{`.proposal-content h2 { border-left: 5px solid ${brand}; } .proposal-content h1 { border-bottom-color: ${brand}; } .agreement-label { color: ${brand}; }`}</style>
           <div
             className="proposal-content"
             dangerouslySetInnerHTML={{ __html: contentHtml }}

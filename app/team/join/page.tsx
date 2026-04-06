@@ -39,7 +39,7 @@ function JoinTeamInner() {
     if (!invite) { setStatus('error'); setErrorMsg('This invite link is invalid or has expired.'); return }
     if (invite.status === 'active') { setStatus('done'); return }
 
-    setTeamName((invite.teams as { name: string })?.name ?? '')
+    setTeamName((invite.teams as unknown as { name: string })?.name ?? '')
 
     if (!user) {
       setStatus('needs-login')
