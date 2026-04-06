@@ -3,28 +3,554 @@
 
 /* ─── PDF Print ─────────────────────────────────────────── */
 @media print {
-  .no-print { display: none !important; }
+  .no-print  { display: none !important; }
   .print-only { display: block !important; }
   body { background: white !important; }
   @page { margin: 15mm 18mm; size: A4; }
+
+  /* Cover page fills one full printed page */
+  .proposal-cover {
+    page-break-after: always;
+    min-height: 100vh;
+  }
+
+  /* Page header repeats on print pages 2+ */
+  .print-page-header {
+    display: flex !important;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+  }
+
+  /* Keep cards from splitting across pages */
+  .content-card { page-break-inside: avoid; }
+  .signature-section { page-break-inside: avoid; }
 }
 .print-only { display: none; }
 
-/* react-colorful overrides */
+
+/* ─── react-colorful ─────────────────────────────────────── */
 .react-colorful { width: 220px !important; height: 220px !important; border-radius: 12px; }
 .react-colorful__saturation { border-radius: 10px 10px 0 0; }
 .react-colorful__hue { height: 18px; border-radius: 0 0 10px 10px; margin-top: 8px; }
 .react-colorful__pointer { width: 22px; height: 22px; border-width: 3px; }
 
-/* TipTap editor styles */
-.tiptap.ProseMirror {
-  outline: none;
-}
 
+/* ─── TipTap editor placeholder ─────────────────────────── */
+.tiptap.ProseMirror { outline: none; }
 .tiptap.ProseMirror p.is-editor-empty:first-child::before {
   color: #9ca3af;
   content: attr(data-placeholder);
   float: left;
   height: 0;
   pointer-events: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   PROPOSAL CLIENT PAGE — full visual system
+   Mirrors the Nexa-Flow HTML template design
+═══════════════════════════════════════════════════════════ */
+
+/* ── CSS variables ──────────────────────────────────────── */
+.proposal-client {
+  --proposal-brand:  #4A3800;   /* overridden inline per-sender */
+  --proposal-gold:   #B8A050;
+  --proposal-amber:  #E07A2A;
+  --proposal-cream:  #F2EDDF;
+  --proposal-cream2: #E8E0CC;
+  --proposal-dark:   #2A2A35;
+  --proposal-mid:    #6B6B78;
+  --proposal-light:  #F7F5F0;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: var(--proposal-light);
+  color: var(--proposal-dark);
+  line-height: 1.65;
+}
+
+
+/* ── COVER PAGE ─────────────────────────────────────────── */
+.proposal-cover {
+  position: relative;
+  overflow: hidden;
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Decorative background circles */
+.cover-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.cover-circle-top {
+  top: -80px; right: -80px;
+  width: 400px; height: 400px;
+  background: rgba(255,255,255,0.05);
+}
+.cover-circle-bottom {
+  bottom: 100px; left: -100px;
+  width: 500px; height: 500px;
+  background: rgba(255,255,255,0.03);
+}
+
+/* Top nav bar */
+.cover-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 48px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.cover-topbar-print {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 48px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.cover-brand-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffffff;
+  line-height: 1.2;
+}
+.cover-brand-tagline {
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.cover-doc-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+.cover-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.cover-download-btn:hover { background: rgba(255,255,255,0.18); }
+
+/* Cover body */
+.cover-body {
+  flex: 1;
+  padding: 56px 48px 48px;
+  position: relative;
+  z-index: 2;
+}
+.cover-eyebrow {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 16px;
+}
+.cover-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 42px;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 14px;
+  max-width: 680px;
+}
+.cover-amount {
+  font-size: 16px;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 44px;
+}
+.cover-amount span { color: #ffffff; font-weight: 600; }
+
+.cover-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+  border-radius: 2px;
+  margin-bottom: 44px;
+}
+
+.cover-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 620px;
+  margin-bottom: 56px;
+}
+.cover-meta-item label {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 4px;
+}
+.cover-meta-item .value {
+  font-size: 15px;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* Bottom strip */
+.cover-bottom {
+  background: rgba(0,0,0,0.2);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 18px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cover-prepared-by {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+}
+.cover-prepared-by strong { color: #ffffff; }
+.cover-confidential {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* 5-colour bar */
+.cover-color-bar {
+  display: flex;
+  height: 7px;
+}
+.cover-color-bar span { flex: 1; }
+
+
+/* ── BODY AREA ──────────────────────────────────────────── */
+.proposal-body {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+
+/* Print page header (shows on pages 2+ when printing) */
+.print-page-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 2px solid var(--proposal-cream2);
+  margin-bottom: 24px;
+}
+.print-header-brand {
+  font-family: Georgia, serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--proposal-brand);
+}
+.print-header-right {
+  text-align: right;
+  font-size: 10px;
+  color: var(--proposal-mid);
+  line-height: 1.5;
+}
+
+/* Content card */
+.content-card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.content-card-accent {
+  height: 4px;
+  width: 100%;
+}
+.content-card-body {
+  padding: 40px 48px;
+}
+
+/* Section heading (template .section-title style) */
+.section-heading {
+  border-left: 5px solid var(--proposal-brand);
+  padding-left: 14px;
+  margin-bottom: 24px;
+}
+.section-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.section-h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 22px;
+  color: var(--proposal-dark);
+  line-height: 1.3;
+}
+.section-intro {
+  font-size: 14px;
+  color: var(--proposal-mid);
+  line-height: 1.65;
+  margin-bottom: 28px;
+}
+
+/* Callout box */
+.callout-box {
+  border-left: 4px solid var(--proposal-brand);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin-bottom: 28px;
+  font-size: 14px;
+  color: var(--proposal-dark);
+  line-height: 1.6;
+}
+
+/* Agreement summary table */
+.agreement-table-wrap {
+  border: 1px solid var(--proposal-cream2);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.agreement-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.agreement-table tr { border-bottom: 1px solid var(--proposal-cream2); }
+.agreement-table tr:last-child { border-bottom: none; }
+.agreement-label {
+  padding: 10px 14px;
+  font-weight: 600;
+  width: 40%;
+}
+.agreement-value {
+  padding: 10px 14px;
+  color: var(--proposal-dark);
+}
+
+/* Two-column signature grid */
+.signature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 32px;
+}
+.sig-block {}
+.sig-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--proposal-mid);
+  margin-bottom: 48px;
+}
+.sig-line {
+  border-bottom: 1.5px solid var(--proposal-dark);
+  margin-bottom: 8px;
+}
+.sig-name { font-size: 12px; font-weight: 600; color: var(--proposal-dark); }
+.sig-role { font-size: 11px; color: var(--proposal-mid); }
+
+.signed-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.signed-name { font-size: 13px; font-weight: 600; }
+.signed-date { font-size: 11px; opacity: 0.75; }
+.signature-image {
+  height: 64px;
+  border: 1px solid var(--proposal-cream2);
+  border-radius: 4px;
+  padding: 4px;
+  background: #fff;
+}
+
+/* Contact footer */
+.contact-footer {
+  border-radius: 14px;
+  padding: 24px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.footer-company {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+.footer-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.5px;
+}
+.footer-contact-item { text-align: center; }
+.footer-contact-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.footer-contact-value { color: #ffffff; font-size: 13px; }
+.footer-right { text-align: right; }
+.footer-tagline { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 2px; }
+.footer-date { font-size: 11px; color: rgba(255,255,255,0.35); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   PROPOSAL CONTENT — TipTap rendered HTML styling
+   Mirrors the template's typographic system
+═══════════════════════════════════════════════════════════ */
+.proposal-content {
+  padding: 40px 48px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--proposal-dark, #2A2A35);
+}
+
+/* Headings */
+.proposal-content h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 28px;
+  color: var(--proposal-dark, #2A2A35);
+  font-weight: bold;
+  margin-bottom: 24px;
+  line-height: 1.3;
+  border-bottom: 3px solid var(--proposal-brand, #4A3800);
+  padding-bottom: 12px;
+}
+.proposal-content h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 20px;
+  color: var(--proposal-dark, #2A2A35);
+  border-left: 5px solid var(--proposal-brand, #4A3800);
+  padding-left: 14px;
+  margin-top: 36px;
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+.proposal-content h2:first-child { margin-top: 0; }
+
+.proposal-content h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--proposal-dark, #2A2A35);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 24px;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #e8e0cc;
+}
+
+/* Paragraphs */
+.proposal-content p {
+  margin-bottom: 14px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--proposal-dark, #2A2A35);
+}
+.proposal-content p:last-child { margin-bottom: 0; }
+
+/* Lists */
+.proposal-content ul,
+.proposal-content ol {
+  padding-left: 20px;
+  margin-bottom: 14px;
+}
+.proposal-content li {
+  margin-bottom: 6px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+/* Bold */
+.proposal-content strong { color: var(--proposal-dark, #2A2A35); font-weight: 700; }
+
+/* Tables */
+.proposal-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+.proposal-content thead tr {
+  background: var(--proposal-brand, #4A3800);
+  color: #ffffff;
+}
+.proposal-content thead th {
+  padding: 11px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+.proposal-content tbody tr {
+  border-bottom: 1px solid #e8e0cc;
+}
+.proposal-content tbody tr:nth-child(even) {
+  background: #faf7f0;
+}
+.proposal-content tbody td {
+  padding: 10px 14px;
+  color: var(--proposal-dark, #2A2A35);
+  vertical-align: top;
+}
+.proposal-content tbody tr:last-child { border-bottom: none; }
+
+/* Blockquote → callout style */
+.proposal-content blockquote {
+  background: #faf7ee;
+  border-left: 4px solid var(--proposal-brand, #4A3800);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin: 20px 0;
+  font-size: 14px;
+  color: var(--proposal-dark, #2A2A35);
+  line-height: 1.6;
+  font-style: normal;
+}
+.proposal-content blockquote p { margin-bottom: 0; }
+
+/* Horizontal rule → section separator */
+.proposal-content hr {
+  border: none;
+  border-top: 2px solid #e8e0cc;
+  margin: 28px 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .cover-topbar { padding: 14px 24px; }
+  .cover-body   { padding: 36px 24px 32px; }
+  .cover-title  { font-size: 28px; }
+  .cover-meta-grid { grid-template-columns: 1fr 1fr; }
+  .cover-bottom { padding: 14px 24px; }
+  .proposal-body { padding: 24px 12px 40px; }
+  .content-card-body { padding: 28px 24px; }
+  .proposal-content  { padding: 28px 24px; }
+  .signature-grid { grid-template-columns: 1fr; gap: 28px; }
+  .contact-footer { padding: 20px 24px; flex-direction: column; align-items: flex-start; }
 }
