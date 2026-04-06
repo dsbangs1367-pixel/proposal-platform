@@ -1,18 +1,8 @@
-import { Resend } from 'resend'
+// Email sending is currently disabled.
+// To re-enable: install resend, restore the implementations below,
+// and set RESEND_API_KEY + RESEND_FROM_EMAIL in your environment.
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-const FROM = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
-
-export async function sendProposalToClient({
-  clientEmail,
-  clientName,
-  senderCompany,
-  proposalTitle,
-  publicToken,
-  brandColor = '#4f46e5',
-  baseUrl,
-}: {
+export async function sendProposalToClient(_args: {
   clientEmail: string
   clientName: string
   senderCompany: string
@@ -20,128 +10,32 @@ export async function sendProposalToClient({
   publicToken: string
   brandColor?: string
   baseUrl?: string
-}) {
-  const link = `${baseUrl ?? APP_URL}/p/${publicToken}`
-  await resend.emails.send({
-    from: FROM,
-    to: clientEmail,
-    subject: `${senderCompany} sent you a proposal: ${proposalTitle}`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border-top: 4px solid ${brandColor}; padding-top: 24px;">
-        <h2 style="color: #1a1a2e;">You have a new proposal</h2>
-        <p>Hi ${clientName},</p>
-        <p><strong>${senderCompany}</strong> has sent you a proposal titled <strong>"${proposalTitle}"</strong>.</p>
-        <p>Click the button below to read and sign.</p>
-        <a href="${link}" style="display:inline-block;background:${brandColor};color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
-          View &amp; Sign Proposal
-        </a>
-        <p style="color:#666;font-size:12px;">Or copy this link: ${link}</p>
-      </div>
-    `,
-  })
-}
+}) {}
 
-export async function sendViewedNotification({
-  ownerEmail,
-  ownerName,
-  clientName,
-  proposalTitle,
-  proposalId,
-}: {
+export async function sendViewedNotification(_args: {
   ownerEmail: string
   ownerName: string
   clientName: string
   proposalTitle: string
   proposalId: string
-}) {
-  await resend.emails.send({
-    from: FROM,
-    to: ownerEmail,
-    subject: `👀 ${clientName} opened your proposal`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color:#1a1a2e;">Proposal Viewed</h2>
-        <p>Hi ${ownerName},</p>
-        <p><strong>${clientName}</strong> has opened your proposal <strong>"${proposalTitle}"</strong>.</p>
-        <p style="color:#666;font-size:13px;">They haven't signed yet — you'll get another notification when they do.</p>
-        <a href="${APP_URL}/proposals/${proposalId}" style="display:inline-block;background:#0ea5e9;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
-          View Proposal
-        </a>
-      </div>
-    `,
-  })
-}
+}) {}
 
-export async function sendSignedNotification({
-  ownerEmail,
-  ownerName,
-  clientName,
-  proposalTitle,
-  proposalId,
-}: {
+export async function sendSignedNotification(_args: {
   ownerEmail: string
   ownerName: string
   clientName: string
   proposalTitle: string
   proposalId: string
-}) {
-  await resend.emails.send({
-    from: FROM,
-    to: ownerEmail,
-    subject: `✅ ${clientName} signed your proposal`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color:#1a1a2e;">Proposal Signed</h2>
-        <p>Hi ${ownerName},</p>
-        <p><strong>${clientName}</strong> has signed your proposal <strong>"${proposalTitle}"</strong>.</p>
-        <a href="${APP_URL}/proposals/${proposalId}" style="display:inline-block;background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
-          View Proposal
-        </a>
-      </div>
-    `,
-  })
-}
+}) {}
 
-export async function sendTeamInvite({
-  inviteEmail,
-  inviterName,
-  teamName,
-  inviteToken,
-}: {
+export async function sendTeamInvite(_args: {
   inviteEmail: string
   inviterName: string
   teamName: string
   inviteToken: string
-}) {
-  const link = `${APP_URL}/team/join?token=${inviteToken}`
-  await resend.emails.send({
-    from: FROM,
-    to: inviteEmail,
-    subject: `${inviterName} invited you to join ${teamName} on ProposalFlow`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color:#1a1a2e;">You've been invited</h2>
-        <p>Hi there,</p>
-        <p><strong>${inviterName}</strong> has invited you to join the team <strong>"${teamName}"</strong> on ProposalFlow.</p>
-        <p>Click below to accept the invitation and set up your account.</p>
-        <a href="${link}" style="display:inline-block;background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
-          Accept Invitation
-        </a>
-        <p style="color:#666;font-size:12px;">If you were not expecting this invitation, you can ignore this email.</p>
-      </div>
-    `,
-  })
-}
+}) {}
 
-export async function sendPaidNotification({
-  ownerEmail,
-  ownerName,
-  clientName,
-  proposalTitle,
-  amount,
-  currency,
-  proposalId,
-}: {
+export async function sendPaidNotification(_args: {
   ownerEmail: string
   ownerName: string
   clientName: string
@@ -149,20 +43,4 @@ export async function sendPaidNotification({
   amount: number
   currency: string
   proposalId: string
-}) {
-  await resend.emails.send({
-    from: FROM,
-    to: ownerEmail,
-    subject: `💰 Payment received for "${proposalTitle}"`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color:#1a1a2e;">Payment Received</h2>
-        <p>Hi ${ownerName},</p>
-        <p><strong>${clientName}</strong> has paid <strong>${currency} ${amount.toLocaleString()}</strong> for <strong>"${proposalTitle}"</strong>.</p>
-        <a href="${APP_URL}/proposals/${proposalId}" style="display:inline-block;background:#16a34a;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
-          View Proposal
-        </a>
-      </div>
-    `,
-  })
-}
+}) {}
