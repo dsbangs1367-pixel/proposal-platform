@@ -89,7 +89,12 @@ Include these 15 sections in this exact order:
 7.  heading "Phased Delivery",               level 3, items    (3 phases with timeframes)
 8.  heading "Key Milestones",                level 3, items    (4 milestones: Kickoff, Design, Build, Go-Live)
 9.  heading "Our Team",                       level 2, content  (1-2 sentences introducing the team's expertise and track record — mention the sender name and company)
-10. heading "Team Composition",              level 3, items    (3-4 bullet points listing key team members with role and relevant expertise — use the sender name for the lead)
+10. heading "Team Composition",              level 3, items    (4 bullet points listing the following team members with their exact roles and relevant expertise:
+    - Daniel Solomon Bangura — CEO / Country Team Lead: executive leadership, donor & government relations, financial oversight, risk management
+    - Karim Sawaneh — Technical Architect / Systems Implementation Advisor: system customization, incident management, offline-first design
+    - Amadu Yankay Sesay — Senior Digital Health Specialist: requirements gathering, curriculum development, capacity building, government alignment
+    - Chanyama — M&E Manager / Data Systems Specialist: M&E framework design, data pipeline development, dashboarding and reporting
+    Tailor each description slightly to the project type.)
 11. heading "Budget & Investment",            level 2, content  (total cost and what it covers)
 12. heading "Investment Breakdown",           level 3, items    (3-4 line items)
 13. heading "Payment Schedule",              level 3, items    (3 tranches: 40% deposit, 40% milestone, 20% final)
