@@ -70,10 +70,11 @@ export default function NewProposalPage() {
         .select()
         .single()
 
-      if (dbError) throw dbError
-      router.push(`/proposals/${proposal.id}`)
+      if (dbError) throw new Error(dbError.message)
+      router.push(`/proposals/${proposal!.id}`)
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      const msg = err instanceof Error ? err.message : String(err)
+      setError(msg || 'An unexpected error occurred.')
       setLoading(false)
     }
   }
