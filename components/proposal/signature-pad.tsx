@@ -9,9 +9,10 @@ import { CheckCircle, RotateCcw } from 'lucide-react'
 
 interface SignaturePadProps {
   onSign: (data: { signerName: string; signerEmail: string; signatureData: string }) => Promise<void>
+  brandColor?: string
 }
 
-export function SignaturePad({ onSign }: SignaturePadProps) {
+export function SignaturePad({ onSign, brandColor = '#4f46e5' }: SignaturePadProps) {
   const canvasRef = useRef<SignatureCanvas>(null)
   const [signerName, setSignerName] = useState('')
   const [signerEmail, setSignerEmail] = useState('')
@@ -94,11 +95,15 @@ export function SignaturePad({ onSign }: SignaturePadProps) {
           <RotateCcw className="w-4 h-4" />
           Clear signature
         </button>
-        <Button onClick={handleSign} disabled={signing} className="flex-1">
-          {signing ? 'Saving…' : (
-            <><CheckCircle className="w-4 h-4 mr-2" />Sign & Accept Proposal</>
-          )}
-        </Button>
+        <button
+          type="button"
+          onClick={handleSign}
+          disabled={signing}
+          className="flex-1 inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium text-white transition-opacity disabled:opacity-50"
+          style={{ backgroundColor: brandColor }}
+        >
+          {signing ? 'Saving…' : <><CheckCircle className="w-4 h-4" />Sign & Accept Proposal</>}
+        </button>
       </div>
     </div>
   )

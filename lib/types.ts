@@ -5,6 +5,10 @@ export interface Profile {
   full_name: string | null
   company_name: string | null
   company_logo_url: string | null
+  company_address: string | null
+  company_phone: string | null
+  company_website: string | null
+  brand_color: string
   plan: 'free' | 'pro'
   created_at: string
 }
