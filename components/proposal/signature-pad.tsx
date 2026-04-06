@@ -2,7 +2,6 @@
 
 import { useRef, useState } from 'react'
 import SignatureCanvas from 'react-signature-canvas'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { CheckCircle, RotateCcw } from 'lucide-react'
@@ -16,19 +15,17 @@ export function SignaturePad({ onSign, brandColor = '#4f46e5' }: SignaturePadPro
   const canvasRef = useRef<SignatureCanvas>(null)
   const [signerName, setSignerName] = useState('')
   const [signerEmail, setSignerEmail] = useState('')
-  const [isEmpty, setIsEmpty] = useState(true)
   const [signing, setSigning] = useState(false)
   const [error, setError] = useState('')
 
   function handleClear() {
     canvasRef.current?.clear()
-    setIsEmpty(true)
   }
 
   async function handleSign() {
     if (!signerName) { setError('Please enter your full name.'); return }
     if (!signerEmail) { setError('Please enter your email address.'); return }
-    if (isEmpty || canvasRef.current?.isEmpty()) { setError('Please draw your signature above.'); return }
+    if (canvasRef.current?.isEmpty()) { setError('Please draw your signature above.'); return }
     setError('')
     setSigning(true)
     const signatureData = canvasRef.current!.toDataURL('image/png')
@@ -76,7 +73,6 @@ export function SignaturePad({ onSign, brandColor = '#4f46e5' }: SignaturePadPro
               className: 'w-full',
               style: { touchAction: 'none' },
             }}
-            onBegin={() => setIsEmpty(false)}
           />
         </div>
         <p className="text-xs text-gray-400 mt-1">Use your mouse or finger to draw your signature</p>

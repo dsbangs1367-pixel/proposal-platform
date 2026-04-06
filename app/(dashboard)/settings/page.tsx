@@ -112,26 +112,16 @@ export default function SettingsPage() {
           <p className="text-sm text-gray-500 mb-5">Pick any color — it appears on your client proposal pages</p>
 
           <div className="flex flex-col sm:flex-row gap-6 items-start">
-            {/* Color wheel */}
             <div className="shrink-0">
-              <style>{`
-                .react-colorful { width: 220px !important; height: 220px !important; border-radius: 12px; }
-                .react-colorful__saturation { border-radius: 10px 10px 0 0; }
-                .react-colorful__hue { height: 18px; border-radius: 0 0 10px 10px; margin-top: 8px; }
-                .react-colorful__pointer { width: 22px; height: 22px; border-width: 3px; }
-              `}</style>
               <HexColorPicker color={brandColor} onChange={setBrandColor} />
             </div>
 
-            {/* Preview + hex input */}
             <div className="flex-1 space-y-4 w-full">
-              {/* Live preview */}
               <div
                 className="w-full h-24 rounded-xl border border-gray-200 shadow-inner transition-colors duration-150"
                 style={{ backgroundColor: brandColor }}
               />
 
-              {/* Hex input */}
               <div className="space-y-1.5">
                 <Label>Hex Code</Label>
                 <div className="flex items-center gap-2">
@@ -148,36 +138,38 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {/* Quick presets */}
               <div className="space-y-1.5">
                 <Label>Quick Presets</Label>
                 <div className="flex gap-2 flex-wrap">
-                  {[
-                    { color: '#4f46e5', name: 'Indigo' },
-                    { color: '#0ea5e9', name: 'Sky' },
-                    { color: '#10b981', name: 'Emerald' },
-                    { color: '#f59e0b', name: 'Amber' },
-                    { color: '#ef4444', name: 'Red' },
-                    { color: '#8b5cf6', name: 'Violet' },
-                    { color: '#ec4899', name: 'Pink' },
-                    { color: '#f97316', name: 'Orange' },
-                    { color: '#06b6d4', name: 'Cyan' },
-                    { color: '#1e293b', name: 'Slate' },
-                    { color: '#15803d', name: 'Green' },
-                    { color: '#b45309', name: 'Brown' },
-                  ].map(({ color, name }) => (
-                    <button
-                      key={color}
-                      onClick={() => setBrandColor(color)}
-                      title={name}
-                      className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-125 focus:outline-none"
-                      style={{
-                        backgroundColor: color,
-                        borderColor: brandColor.toLowerCase() === color ? '#111' : 'transparent',
-                        boxShadow: brandColor.toLowerCase() === color ? '0 0 0 1px #fff inset' : 'none',
-                      }}
-                    />
-                  ))}
+                  {(() => {
+                    const lowerBrand = brandColor.toLowerCase()
+                    return [
+                      { color: '#4f46e5', name: 'Indigo' },
+                      { color: '#0ea5e9', name: 'Sky' },
+                      { color: '#10b981', name: 'Emerald' },
+                      { color: '#f59e0b', name: 'Amber' },
+                      { color: '#ef4444', name: 'Red' },
+                      { color: '#8b5cf6', name: 'Violet' },
+                      { color: '#ec4899', name: 'Pink' },
+                      { color: '#f97316', name: 'Orange' },
+                      { color: '#06b6d4', name: 'Cyan' },
+                      { color: '#1e293b', name: 'Slate' },
+                      { color: '#15803d', name: 'Green' },
+                      { color: '#b45309', name: 'Brown' },
+                    ].map(({ color, name }) => (
+                      <button
+                        key={color}
+                        onClick={() => setBrandColor(color)}
+                        title={name}
+                        className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-125 focus:outline-none"
+                        style={{
+                          backgroundColor: color,
+                          borderColor: lowerBrand === color ? '#111' : 'transparent',
+                          boxShadow: lowerBrand === color ? '0 0 0 1px #fff inset' : 'none',
+                        }}
+                      />
+                    ))
+                  })()}
                 </div>
               </div>
             </div>

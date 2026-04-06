@@ -20,17 +20,10 @@ export default async function PublicProposalPage({ params }: { params: Promise<{
     proposal.status = 'viewed'
   }
 
-  const { data: signature } = await supabase
-    .from('signatures')
-    .select('*')
-    .eq('proposal_id', proposal.id)
-    .maybeSingle()
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', proposal.user_id)
-    .single()
+  const [{ data: signature }, { data: profile }] = await Promise.all([
+    supabase.from('signatures').select('*').eq('proposal_id', proposal.id).maybeSingle(),
+    supabase.from('profiles').select('*').eq('id', proposal.user_id).single(),
+  ])
 
   return (
     <ClientProposalView

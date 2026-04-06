@@ -8,7 +8,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import { SignaturePad } from '@/components/proposal/signature-pad'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import type { Proposal, Signature, Profile } from '@/lib/types'
-import { CheckCircle, MapPin, Phone, Globe, Mail, FileText } from 'lucide-react'
+import { CheckCircle, MapPin, Phone, Globe, FileText } from 'lucide-react'
 
 interface Props {
   proposal: Proposal
