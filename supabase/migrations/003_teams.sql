@@ -69,7 +69,14 @@ $$;
 
 -- ========================
 -- RLS POLICIES (using helper functions — no cross-table recursion)
+-- Drop existing policies first so this migration is safe to re-run
 -- ========================
+
+drop policy if exists "Team owner and members can read" on public.teams;
+drop policy if exists "Owner can manage team" on public.teams;
+drop policy if exists "Team owner and admins can manage members" on public.team_members;
+drop policy if exists "Members can read their own membership" on public.team_members;
+drop policy if exists "Team members can read team proposals" on public.proposals;
 
 -- Teams: owner always; members via helper (queries team_members without RLS)
 create policy "Team owner and members can read" on public.teams

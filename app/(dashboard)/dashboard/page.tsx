@@ -8,14 +8,17 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  type SigWithProposal = { proposal_id: string; signed_at: string; proposals: { created_at: string } }
+
   // Fetch all proposals for accurate stats + signatures for avg time
-  const [{ data: allProposals }, { data: signatures }] = await Promise.all([
+  const [{ data: allProposals }, { data: rawSignatures }] = await Promise.all([
     supabase.from('proposals').select('id, status, created_at').eq('user_id', user!.id),
     supabase
       .from('signatures')
-      .select('proposal_id, signed_at, proposals!inner(user_id, created_at)')
+      .select('proposal_id, signed_at, proposals!inner(created_at)')
       .eq('proposals.user_id', user!.id),
   ])
+  const signatures = rawSignatures as unknown as SigWithProposal[] | null
 
   const { data: recentProposals } = await supabase
     .from('proposals')
@@ -34,7 +37,7 @@ export default async function DashboardPage() {
   let avgDays: number | null = null
   if (signatures && signatures.length > 0) {
     const diffs = signatures.map((sig) => {
-      const created = new Date((sig.proposals as unknown as { created_at: string }).created_at).getTime()
+      const created = new Date(sig.proposals.created_at).getTime()
       const signedAt = new Date(sig.signed_at).getTime()
       return (signedAt - created) / (1000 * 60 * 60 * 24)
     })

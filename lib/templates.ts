@@ -1,6 +1,8 @@
 // System proposal templates as TipTap JSON content
 // Section structure mirrors the Nexa-Flow HTML proposal template
 
+import { teamBullets } from './team'
+
 export const SYSTEM_TEMPLATES = [
   {
     id: 'digital-health-consulting',
@@ -51,12 +53,7 @@ export const SYSTEM_TEMPLATES = [
       { type: 'heading', level: 2, text: 'Our Team' },
       { type: 'paragraph', text: 'Nexa-Flow is led by a multidisciplinary founding team combining deep expertise in public health, digital systems architecture, data intelligence, and pan-African programme management. Each team member brings a verified track record of delivery at national and international scale.' },
       { type: 'heading', level: 3, text: 'Team Composition' },
-      { type: 'bulletList', items: [
-        'Daniel Solomon Bangura — CEO / Country Team Lead: Executive leadership, strategic direction, donor & government relations, financial oversight, and risk management.',
-        'Karim Sawaneh — Technical Architect / Systems Implementation Advisor: System customization, incident management, and offline-first design for low-connectivity environments.',
-        'Amadu Yankay Sesay — Senior Digital Health Specialist: Requirements gathering, curriculum development, capacity building, and government alignment.',
-        'Chanyama — M&E Manager / Data Systems Specialist: M&E framework design, data pipeline development, dashboarding, and reporting for decision-making.',
-      ] },
+      { type: 'bulletList', items: teamBullets() },
 
       { type: 'heading', level: 2, text: 'Budget & Investment' },
       { type: 'paragraph', text: 'The total investment for this engagement is [Currency] [Amount]. All costs are inclusive of configuration, training, travel, and 90-day post-launch support. Prices are valid for 30 days from the date of issue.' },
@@ -134,12 +131,11 @@ export const SYSTEM_TEMPLATES = [
       { type: 'heading', level: 2, text: 'Our Team' },
       { type: 'paragraph', text: 'Our implementation team brings together technical architects, digital health specialists, and programme managers with proven experience delivering enterprise software in African contexts.' },
       { type: 'heading', level: 3, text: 'Team Composition' },
-      { type: 'bulletList', items: [
-        'Daniel Solomon Bangura — CEO / Country Team Lead: Executive oversight, stakeholder engagement, donor & government relations, and programme governance.',
-        'Karim Sawaneh — Technical Architect / Systems Implementation Advisor: System configuration, integrations, incident management, and go-live support.',
-        'Amadu Yankay Sesay — Senior Digital Health Specialist: Staff training, curriculum development, capacity building, and sustained adoption.',
-        'Chanyama — M&E Manager / Data Systems Specialist: Analytics setup, data pipeline development, dashboard configuration, and performance monitoring.',
-      ] },
+      { type: 'bulletList', items: teamBullets({
+        'Karim Sawaneh': 'system configuration, integrations, incident management, and go-live support',
+        'Amadu Yankay Sesay': 'staff training, curriculum development, capacity building, and sustained adoption',
+        'Chanyama': 'analytics setup, data pipeline development, dashboard configuration, and performance monitoring',
+      }) },
 
       { type: 'heading', level: 2, text: 'Budget & Investment' },
       { type: 'paragraph', text: 'One-time implementation fee: [Currency] [Amount]. Optional monthly support retainer: [Amount]/month. All prices are valid for 30 days from date of issue.' },
@@ -201,12 +197,11 @@ export const SYSTEM_TEMPLATES = [
       { type: 'heading', level: 2, text: 'Our Team' },
       { type: 'paragraph', text: 'Nexa-Flow brings a multidisciplinary team with a track record of delivering evidence-based digital health programmes in collaboration with WHO, Ministry of Health, AFENET, CDC, and major bilateral donors.' },
       { type: 'heading', level: 3, text: 'Team Composition' },
-      { type: 'bulletList', items: [
-        'Daniel Solomon Bangura — CEO / Country Team Lead: Strategic leadership, government engagement, donor relations, financial oversight, and programme oversight.',
-        'Karim Sawaneh — Technical Architect / Systems Implementation Advisor: Platform design, system customization, offline-first solutions for low-resource settings, and incident management.',
-        'Amadu Yankay Sesay — Senior Digital Health Specialist: Government alignment, requirements gathering, curriculum development, and health systems strengthening.',
-        'Chanyama — M&E Manager / Data Systems Specialist: Theory of Change design, M&E framework development, data pipeline creation, and impact dashboards for donor reporting.',
-      ] },
+      { type: 'bulletList', items: teamBullets({
+        'Daniel Solomon Bangura': 'strategic leadership, government engagement, donor relations, financial oversight, and programme oversight',
+        'Amadu Yankay Sesay': 'government alignment, requirements gathering, curriculum development, and health systems strengthening',
+        'Chanyama': 'Theory of Change design, M&E framework development, data pipeline creation, and impact dashboards for donor reporting',
+      }) },
 
       { type: 'heading', level: 2, text: 'Budget & Investment' },
       { type: 'paragraph', text: 'Total funding requested: [Currency] [Amount] over [X] months. Budget is structured to maximise direct programme spend (>70%) while ensuring adequate M&E and overhead.' },
@@ -257,12 +252,7 @@ export const SYSTEM_TEMPLATES = [
       { type: 'heading', level: 2, text: 'Our Team' },
       { type: 'paragraph', text: 'Our team combines strategic, technical, and operational expertise to deliver this engagement with quality and accountability at every stage.' },
       { type: 'heading', level: 3, text: 'Team Composition' },
-      { type: 'bulletList', items: [
-        'Daniel Solomon Bangura — CEO / Country Team Lead: Primary point of contact, executive oversight, financial management, and risk management.',
-        'Karim Sawaneh — Technical Architect / Systems Implementation Advisor: Delivery quality, technical outputs, and system implementation.',
-        'Amadu Yankay Sesay — Senior Digital Health Specialist: Subject matter expertise, capacity building, and stakeholder engagement.',
-        'Chanyama — M&E Manager / Data Systems Specialist: Monitoring, evaluation, data systems, and reporting.',
-      ] },
+      { type: 'bulletList', items: teamBullets() },
 
       { type: 'heading', level: 2, text: 'Budget & Investment' },
       { type: 'paragraph', text: 'Total investment: [Currency] [Amount] — inclusive of all services listed above. Payment terms: [e.g. 50% upfront, 50% on completion]. Prices valid for 30 days.' },
@@ -319,12 +309,11 @@ export const SYSTEM_TEMPLATES = [
       { type: 'heading', level: 2, text: 'Our Team' },
       { type: 'paragraph', text: 'Nexa-Flow brings executive leadership, technical depth, and on-the-ground programme experience to this partnership — ensuring credible co-delivery from day one.' },
       { type: 'heading', level: 3, text: 'Team Composition' },
-      { type: 'bulletList', items: [
-        'Daniel Solomon Bangura — CEO / Country Team Lead: Partnership governance, strategic alignment, donor & government relations, and senior relationship management.',
-        'Karim Sawaneh — Technical Architect / Systems Implementation Advisor: Technical integration, platform interoperability, and joint system design.',
-        'Amadu Yankay Sesay — Senior Digital Health Specialist: Joint programme design, curriculum development, stakeholder engagement, and capacity building.',
-        'Chanyama — M&E Manager / Data Systems Specialist: Shared monitoring frameworks, data pipeline development, joint reporting, and impact measurement.',
-      ] },
+      { type: 'bulletList', items: teamBullets({
+        'Karim Sawaneh': 'technical integration, platform interoperability, and joint system design',
+        'Amadu Yankay Sesay': 'joint programme design, curriculum development, stakeholder engagement, and capacity building',
+        'Chanyama': 'shared monitoring frameworks, data pipeline development, joint reporting, and impact measurement',
+      }) },
 
       { type: 'heading', level: 2, text: 'Terms & Conditions' },
       { type: 'paragraph', text: 'Initial partnership term: [X months], commencing on the date of MOU signing. Either party may withdraw with 30 days written notice. All IP created jointly will be co-owned unless otherwise agreed in the MOU.' },

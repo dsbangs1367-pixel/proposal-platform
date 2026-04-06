@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import DOMPurify from 'dompurify'
 import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -26,13 +27,14 @@ export function ClientProposalView({ proposal, signature: initialSig, senderProf
   const issueDate = formatDate(proposal.created_at)
   const validUntil = proposal.expires_at ? formatDate(proposal.expires_at) : 'Open'
 
-  const contentHtml = proposal.content
+  const rawHtml = proposal.content
     ? generateHTML(proposal.content as Parameters<typeof generateHTML>[0], [
         StarterKit,
         Underline,
         TextAlign.configure({ types: ['heading', 'paragraph'] }),
       ])
     : '<p>No content yet.</p>'
+  const contentHtml = DOMPurify.sanitize(rawHtml)
 
   async function handleSign(data: { signerName: string; signerEmail: string; signatureData: string }) {
     const res = await fetch('/api/signatures', {

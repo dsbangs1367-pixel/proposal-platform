@@ -43,10 +43,12 @@
     "react-signature-canvas": "^1.1.0-alpha.2",
     "resend": "^6.10.0",
     "tailwind-merge": "^3.5.0",
+    "dompurify": "^3.2.6",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/dompurify": "^3.0.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
