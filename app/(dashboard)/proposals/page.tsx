@@ -2,7 +2,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { StatusBadge } from '@/components/ui/badge'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import { Plus, FileText, Copy, ExternalLink } from 'lucide-react'
+import { Plus, FileText, ExternalLink } from 'lucide-react'
+import { ProposalActions } from '@/components/proposal/proposal-actions'
 
 export default async function ProposalsPage() {
   const supabase = await createClient()
@@ -78,7 +79,7 @@ export default async function ProposalsPage() {
                     {formatDate(p.created_at)}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <Link
                         href={`/proposals/${p.id}`}
                         className="text-sm text-indigo-600 hover:underline font-medium"
@@ -93,6 +94,7 @@ export default async function ProposalsPage() {
                       >
                         <ExternalLink className="w-4 h-4" />
                       </Link>
+                      <ProposalActions proposalId={p.id} />
                     </div>
                   </td>
                 </tr>

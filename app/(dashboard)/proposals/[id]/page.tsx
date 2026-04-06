@@ -14,6 +14,7 @@ import type { Proposal } from '@/lib/types'
 import {
   Save, Send, Eye, ArrowLeft, Copy, Check, Loader2, ExternalLink
 } from 'lucide-react'
+import { ProposalActions } from '@/components/proposal/proposal-actions'
 
 export default function ProposalEditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -118,6 +119,7 @@ export default function ProposalEditorPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <ProposalActions proposalId={id} redirectOnDelete />
             <Button variant="outline" size="sm" onClick={copyLink}>
               {copied ? <Check className="w-4 h-4 mr-1.5" /> : <Copy className="w-4 h-4 mr-1.5" />}
               {copied ? 'Copied!' : 'Copy Link'}
