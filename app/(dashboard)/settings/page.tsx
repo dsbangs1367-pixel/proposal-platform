@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { HexColorPicker, HexColorInput } from 'react-colorful'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -108,32 +109,78 @@ export default function SettingsPage() {
         {/* Brand color */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h2 className="font-semibold text-gray-900 mb-1">Brand Color</h2>
-          <p className="text-sm text-gray-500 mb-4">Used as the accent color on client proposal pages</p>
-          <div className="flex items-center gap-4">
-            <input
-              type="color"
-              value={brandColor}
-              onChange={e => setBrandColor(e.target.value)}
-              className="w-12 h-12 rounded-lg border border-gray-200 cursor-pointer p-0.5"
-            />
-            <div>
-              <p className="text-sm font-medium text-gray-900">Selected color</p>
-              <p className="text-xs text-gray-400 font-mono">{brandColor}</p>
+          <p className="text-sm text-gray-500 mb-5">Pick any color — it appears on your client proposal pages</p>
+
+          <div className="flex flex-col sm:flex-row gap-6 items-start">
+            {/* Color wheel */}
+            <div className="shrink-0">
+              <style>{`
+                .react-colorful { width: 220px !important; height: 220px !important; border-radius: 12px; }
+                .react-colorful__saturation { border-radius: 10px 10px 0 0; }
+                .react-colorful__hue { height: 18px; border-radius: 0 0 10px 10px; margin-top: 8px; }
+                .react-colorful__pointer { width: 22px; height: 22px; border-width: 3px; }
+              `}</style>
+              <HexColorPicker color={brandColor} onChange={setBrandColor} />
             </div>
-            <div
-              className="flex-1 h-10 rounded-lg border border-gray-200"
-              style={{ backgroundColor: brandColor }}
-            />
-          </div>
-          <div className="flex gap-2 mt-4 flex-wrap">
-            {['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#1e293b'].map(c => (
-              <button
-                key={c}
-                onClick={() => setBrandColor(c)}
-                className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110"
-                style={{ backgroundColor: c, borderColor: brandColor === c ? '#000' : 'transparent' }}
+
+            {/* Preview + hex input */}
+            <div className="flex-1 space-y-4 w-full">
+              {/* Live preview */}
+              <div
+                className="w-full h-24 rounded-xl border border-gray-200 shadow-inner transition-colors duration-150"
+                style={{ backgroundColor: brandColor }}
               />
-            ))}
+
+              {/* Hex input */}
+              <div className="space-y-1.5">
+                <Label>Hex Code</Label>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-md border border-gray-200 shrink-0" style={{ backgroundColor: brandColor }} />
+                  <div className="flex items-center border border-gray-300 rounded-md overflow-hidden flex-1">
+                    <span className="px-2 text-gray-400 text-sm">#</span>
+                    <HexColorInput
+                      color={brandColor}
+                      onChange={setBrandColor}
+                      prefixed={false}
+                      className="flex-1 py-2 pr-3 text-sm text-gray-900 outline-none bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick presets */}
+              <div className="space-y-1.5">
+                <Label>Quick Presets</Label>
+                <div className="flex gap-2 flex-wrap">
+                  {[
+                    { color: '#4f46e5', name: 'Indigo' },
+                    { color: '#0ea5e9', name: 'Sky' },
+                    { color: '#10b981', name: 'Emerald' },
+                    { color: '#f59e0b', name: 'Amber' },
+                    { color: '#ef4444', name: 'Red' },
+                    { color: '#8b5cf6', name: 'Violet' },
+                    { color: '#ec4899', name: 'Pink' },
+                    { color: '#f97316', name: 'Orange' },
+                    { color: '#06b6d4', name: 'Cyan' },
+                    { color: '#1e293b', name: 'Slate' },
+                    { color: '#15803d', name: 'Green' },
+                    { color: '#b45309', name: 'Brown' },
+                  ].map(({ color, name }) => (
+                    <button
+                      key={color}
+                      onClick={() => setBrandColor(color)}
+                      title={name}
+                      className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-125 focus:outline-none"
+                      style={{
+                        backgroundColor: color,
+                        borderColor: brandColor.toLowerCase() === color ? '#111' : 'transparent',
+                        boxShadow: brandColor.toLowerCase() === color ? '0 0 0 1px #fff inset' : 'none',
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
