@@ -3,7 +3,7 @@ import Anthropic from '@anthropic-ai/sdk'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-// Convert simple section array to TipTap JSON — avoids asking Claude to generate verbose TipTap directly
+// Convert simple section array to TipTap JSON
 function toTipTap(sections: Array<{ heading?: string; level?: number; content?: string; items?: string[] }>) {
   const nodes: object[] = []
   for (const section of sections) {
@@ -48,77 +48,25 @@ export async function POST(request: NextRequest) {
     }
     const toneGuide = toneGuides[tone ?? 'formal'] ?? toneGuides.formal
 
-    const systemPrompt = `You are an expert proposal writer for a pan-African digital technology and public health consultancy. ${toneGuide}
+    const systemPrompt = `You are an expert proposal writer for a pan-African digital technology consultancy. ${toneGuide}
 
-Return ONLY a raw JSON object (no markdown, no explanation) with this exact shape. Follow the template's 9-section structure closely:
+Return ONLY a raw JSON object — no markdown fences, no explanation. Use exactly this structure:
 {
   "title": "Specific proposal title",
   "sections": [
-    {
-      "heading": "Executive Summary",
-      "level": 2,
-      "content": "2-3 sentence overview: what you will deliver, for whom, and the key outcome. Mention total value and timeline."
-    },
-    {
-      "heading": "Problem Statement & Context",
-      "level": 2,
-      "content": "2-3 sentences describing the specific challenge or gap. Ground it in African/local realities with any relevant data or evidence."
-    },
-    {
-      "heading": "Core Challenges Identified",
-      "level": 3,
-      "items": ["Challenge 1 — brief impact statement", "Challenge 2 — brief impact statement", "Challenge 3 — brief impact statement", "Challenge 4 — brief impact statement"]
-    },
-    {
-      "heading": "Proposed Solution",
-      "level": 2,
-      "content": "Describe the intervention: platforms, tools, or systems to be deployed, how they address the gap, and why this approach works."
-    },
-    {
-      "heading": "Solution Features & Capabilities",
-      "level": 3,
-      "items": ["Feature 1: description and benefit", "Feature 2: description and benefit", "Feature 3: description and benefit", "Feature 4: description and benefit"]
-    },
-    {
-      "heading": "Implementation Approach & Timeline",
-      "level": 2,
-      "content": "Describe the phased delivery approach. Our implementation follows a Connect → Intelligence → Act & Automate framework."
-    },
-    {
-      "heading": "Phased Delivery",
-      "level": 3,
-      "items": ["Phase 1 (Weeks 1-4): description of activities", "Phase 2 (Weeks 5-8): description of activities", "Phase 3 (Weeks 9-12): description of activities"]
-    },
-    {
-      "heading": "Key Milestones",
-      "level": 3,
-      "items": ["M1 — Kickoff: deliverable and date", "M2 — Design complete: deliverable and date", "M3 — Build complete: deliverable and date", "M4 — Go-Live: deliverable and date"]
-    },
-    {
-      "heading": "Budget & Investment",
-      "level": 2,
-      "content": "The total investment for this engagement is [currency + amount]. All prices include the services described above and are valid for the duration stated on the cover."
-    },
-    {
-      "heading": "Investment Breakdown",
-      "level": 3,
-      "items": ["Discovery & Planning: description", "Design & Development: description", "Training & Capacity Building: description", "Support & Monitoring: description"]
-    },
-    {
-      "heading": "Payment Schedule",
-      "level": 3,
-      "items": ["Deposit (40%): due on contract signing", "Milestone Payment (40%): due on Phase 2 completion", "Final Payment (20%): due on go-live and handover"]
-    },
-    {
-      "heading": "Terms & Conditions",
-      "level": 2,
-      "content": "This proposal is valid for 30 days from the date of issue. Any changes to scope require a written Change Request agreed by both parties. Intellectual property transfers in full to the client upon receipt of final payment. Either party may terminate with 14 days written notice."
-    },
-    {
-      "heading": "Next Steps",
-      "level": 2,
-      "content": "To proceed, please sign this proposal below. A 40% deposit is required to schedule the project kickoff. We will confirm a kickoff meeting within 5 business days of receiving the signed agreement and deposit."
-    }
+    { "heading": "Executive Summary", "level": 2, "content": "2-3 sentence overview of the engagement, value, and outcome." },
+    { "heading": "Problem Statement & Context", "level": 2, "content": "The specific challenge the client faces, grounded in evidence." },
+    { "heading": "Core Challenges Identified", "level": 3, "items": ["Challenge 1", "Challenge 2", "Challenge 3", "Challenge 4"] },
+    { "heading": "Proposed Solution", "level": 2, "content": "The intervention: platforms, tools, or approach and why it works." },
+    { "heading": "Solution Features & Capabilities", "level": 3, "items": ["Feature 1", "Feature 2", "Feature 3", "Feature 4"] },
+    { "heading": "Implementation Approach & Timeline", "level": 2, "content": "Phased delivery approach overview." },
+    { "heading": "Phased Delivery", "level": 3, "items": ["Phase 1 (Weeks 1-4): activities", "Phase 2 (Weeks 5-8): activities", "Phase 3 (Weeks 9-12): activities"] },
+    { "heading": "Key Milestones", "level": 3, "items": ["M1 — Kickoff: deliverable", "M2 — Design: deliverable", "M3 — Build: deliverable", "M4 — Go-Live: deliverable"] },
+    { "heading": "Budget & Investment", "level": 2, "content": "Total investment summary and what it covers." },
+    { "heading": "Investment Breakdown", "level": 3, "items": ["Item 1: description and cost", "Item 2: description and cost", "Item 3: description and cost"] },
+    { "heading": "Payment Schedule", "level": 3, "items": ["Deposit (40%): due on contract signing", "Milestone (40%): due on Phase 2 completion", "Final (20%): due on go-live"] },
+    { "heading": "Terms & Conditions", "level": 2, "content": "This proposal is valid for 30 days. Scope changes require a written Change Request. IP transfers on full payment. Either party may terminate with 14 days written notice." },
+    { "heading": "Next Steps", "level": 2, "content": "Sign below to proceed. A 40% deposit confirms the engagement and we will schedule kickoff within 5 business days." }
   ]
 }`
 
@@ -130,24 +78,33 @@ Scope: ${scopeDescription}
 Budget: ${amount ? `${currency} ${Number(amount).toLocaleString()}` : 'To be confirmed'}
 Timeline: ${timeline || 'To be confirmed'}
 
-Follow the 9-section template structure exactly. Keep each section concise but substantive. Ground content in African/Sierra Leone context where relevant.`
+Keep each section concise but substantive. Ground content in African/Sierra Leone context where relevant.`
 
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 3500,
       messages: [{ role: 'user', content: userPrompt }],
       system: systemPrompt,
     })
 
     let text = message.content[0].type === 'text' ? message.content[0].text : ''
-    text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/m, '').trim()
+    // Strip any accidental markdown fences
+    text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/m, '').trim()
 
-    const parsed = JSON.parse(text)
-    const content = toTipTap(parsed.sections ?? [])
+    let parsed: { title?: string; sections?: unknown[] }
+    try {
+      parsed = JSON.parse(text)
+    } catch {
+      // If JSON is still broken, return a descriptive error so the UI shows it
+      console.error('Claude returned non-JSON:', text.slice(0, 400))
+      return NextResponse.json({ error: 'AI returned an invalid response. Please try again.' }, { status: 500 })
+    }
 
-    return NextResponse.json({ title: parsed.title, content })
+    const content = toTipTap((parsed.sections ?? []) as Array<{ heading?: string; level?: number; content?: string; items?: string[] }>)
+    return NextResponse.json({ title: parsed.title ?? 'Untitled Proposal', content })
+
   } catch (err: unknown) {
     console.error('Generation error:', err)
-    return NextResponse.json({ error: 'Failed to generate proposal' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to generate proposal. Please try again.' }, { status: 500 })
   }
 }
