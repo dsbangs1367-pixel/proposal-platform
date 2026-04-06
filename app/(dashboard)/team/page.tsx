@@ -29,11 +29,19 @@ export default function TeamPage() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data: teamData } = await supabase
-      .from('teams')
-      .select('*')
-      .eq('owner_id', user.id)
-      .maybeSingle()
+
+    // Check owned team first, then fall back to membership
+    const [{ data: ownedTeam }, { data: membership }] = await Promise.all([
+      supabase.from('teams').select('*').eq('owner_id', user.id).maybeSingle(),
+      supabase
+        .from('team_members')
+        .select('team_id, teams(*)')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .maybeSingle(),
+    ])
+
+    const teamData = ownedTeam ?? (membership?.teams as unknown as typeof ownedTeam)
     if (teamData) {
       setTeam(teamData)
       const { data: memberData } = await supabase

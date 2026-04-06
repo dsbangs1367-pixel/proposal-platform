@@ -17,27 +17,26 @@ export default async function PublicProposalPage({ params }: { params: Promise<{
 
   if (!proposal) notFound()
 
-  // Check expiry
-  if (proposal.expires_at && new Date(proposal.expires_at) < new Date()) {
-    const [{ data: signature }, { data: profile }] = await Promise.all([
-      supabase.from('signatures').select('*').eq('proposal_id', proposal.id).maybeSingle(),
-      supabase.from('profiles').select('*').eq('id', proposal.user_id).single(),
-    ])
-    // Still show if already signed — expiry only blocks unsigned proposals
-    if (!signature) {
-      return <ExpiredView proposal={proposal as Proposal} senderProfile={profile as Profile | null} />
-    }
+  // Fetch signature and profile once — reused for expiry check and rendering
+  const [{ data: signature }, { data: profile }] = await Promise.all([
+    supabase.from('signatures').select('*').eq('proposal_id', proposal.id).maybeSingle(),
+    supabase.from('profiles').select('*').eq('id', proposal.user_id).single(),
+  ])
+
+  // Check expiry — still show if already signed
+  if (proposal.expires_at && new Date(proposal.expires_at) < new Date() && !signature) {
+    return <ExpiredView proposal={proposal as Proposal} senderProfile={profile as Profile | null} />
   }
 
   if (proposal.status === 'sent') {
     await supabase.from('proposals').update({ status: 'viewed' }).eq('id', proposal.id)
     proposal.status = 'viewed'
-    // Notify owner — fire and forget, don't block page render
-    createServiceClient().then(async (svc) => {
+    // Notify owner in parallel — don't block page render on email failure
+    const svc = await createServiceClient().catch(() => null)
+    if (svc) {
       const { data: ownerUser } = await svc.auth.admin.getUserById(proposal.user_id)
-      const { data: profile } = await svc.from('profiles').select('full_name').eq('id', proposal.user_id).single()
       if (ownerUser?.user?.email) {
-        sendViewedNotification({
+        await sendViewedNotification({
           ownerEmail: ownerUser.user.email,
           ownerName: profile?.full_name ?? 'there',
           clientName: proposal.client_name || 'Your client',
@@ -45,13 +44,8 @@ export default async function PublicProposalPage({ params }: { params: Promise<{
           proposalId: proposal.id,
         }).catch(() => {})
       }
-    }).catch(() => {})
+    }
   }
-
-  const [{ data: signature }, { data: profile }] = await Promise.all([
-    supabase.from('signatures').select('*').eq('proposal_id', proposal.id).maybeSingle(),
-    supabase.from('profiles').select('*').eq('id', proposal.user_id).single(),
-  ])
 
   return (
     <ClientProposalView

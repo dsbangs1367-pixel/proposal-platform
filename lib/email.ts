@@ -127,7 +127,7 @@ export async function sendTeamInvite({
         <a href="${link}" style="display:inline-block;background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">
           Accept Invitation
         </a>
-        <p style="color:#666;font-size:12px;">This invitation expires in 7 days.</p>
+        <p style="color:#666;font-size:12px;">If you were not expecting this invitation, you can ignore this email.</p>
       </div>
     `,
   })

@@ -1,4 +1,4 @@
-import { FileX, MapPin, Phone, Globe, FileText } from 'lucide-react'
+import { FileX, Phone, Globe, FileText } from 'lucide-react'
 import type { Proposal, Profile } from '@/lib/types'
 
 interface Props {
