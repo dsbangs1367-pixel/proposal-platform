@@ -34,6 +34,14 @@ function toTipTap(sections: Array<{ heading?: string; level?: number; content?: 
 }
 
 export async function POST(request: NextRequest) {
+  // Fail fast with a clear message if the key is missing
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json(
+      { error: 'ANTHROPIC_API_KEY is not configured on this server. Add it to your Vercel environment variables.' },
+      { status: 500 }
+    )
+  }
+
   try {
     const body = await request.json()
     const {
