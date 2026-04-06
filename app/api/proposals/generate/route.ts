@@ -79,7 +79,7 @@ The JSON must have:
     - "content": a paragraph of prose (string) — use this for main sections
     - "items": an array of bullet strings — use this for sub-sections
 
-Include these 13 sections in this exact order:
+Include these 15 sections in this exact order:
 1.  heading "Executive Summary",              level 2, content  (2-3 sentences: what, for whom, total value, timeline)
 2.  heading "Problem Statement & Context",    level 2, content  (specific challenge grounded in local evidence)
 3.  heading "Core Challenges Identified",     level 3, items    (4 bullet points)
@@ -88,11 +88,13 @@ Include these 13 sections in this exact order:
 6.  heading "Implementation Approach",        level 2, content  (phased delivery overview, 1-2 sentences)
 7.  heading "Phased Delivery",               level 3, items    (3 phases with timeframes)
 8.  heading "Key Milestones",                level 3, items    (4 milestones: Kickoff, Design, Build, Go-Live)
-9.  heading "Budget & Investment",            level 2, content  (total cost and what it covers)
-10. heading "Investment Breakdown",           level 3, items    (3-4 line items)
-11. heading "Payment Schedule",              level 3, items    (3 tranches: 40% deposit, 40% milestone, 20% final)
-12. heading "Terms & Conditions",             level 2, content  (validity 30 days, IP, termination — keep to 2 sentences)
-13. heading "Next Steps",                    level 2, content  (how to proceed, deposit, kickoff timing)`
+9.  heading "Our Team",                       level 2, content  (1-2 sentences introducing the team's expertise and track record — mention the sender name and company)
+10. heading "Team Composition",              level 3, items    (3-4 bullet points listing key team members with role and relevant expertise — use the sender name for the lead)
+11. heading "Budget & Investment",            level 2, content  (total cost and what it covers)
+12. heading "Investment Breakdown",           level 3, items    (3-4 line items)
+13. heading "Payment Schedule",              level 3, items    (3 tranches: 40% deposit, 40% milestone, 20% final)
+14. heading "Terms & Conditions",             level 2, content  (validity 30 days, IP, termination — keep to 2 sentences)
+15. heading "Next Steps",                    level 2, content  (how to proceed, deposit, kickoff timing)`
 
     const userPrompt = `Write a proposal for this engagement:
 Client name: ${clientName}

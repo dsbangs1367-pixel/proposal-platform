@@ -48,6 +48,16 @@ export const SYSTEM_TEMPLATES = [
         'M4 — Full Go-Live: All sites onboarded and reporting through the platform',
       ] },
 
+      { type: 'heading', level: 2, text: 'Our Team' },
+      { type: 'paragraph', text: 'Nexa-Flow is led by a multidisciplinary founding team combining deep expertise in public health, digital systems architecture, data intelligence, and pan-African programme management. Each team member brings a verified track record of delivery at national and international scale.' },
+      { type: 'heading', level: 3, text: 'Team Composition' },
+      { type: 'bulletList', items: [
+        'Daniel Solomon Bangura — CEO & Project Lead: Strategic direction, donor & government relations, public health expertise. Managed donor-funded programmes exceeding $400,000.',
+        'Karim Sawaneh — CTO & Technical Lead: Systems architecture, offline-first design, platform configuration and incident management.',
+        'Amadu Yankay Sesay — Digital Health Lead: Requirements gathering, training curriculum design, capacity building, and government alignment.',
+        'Sahr Chanyama Pessima — M&E Lead: Monitoring & evaluation frameworks, data pipelines, dashboarding and impact reporting.',
+      ] },
+
       { type: 'heading', level: 2, text: 'Budget & Investment' },
       { type: 'paragraph', text: 'The total investment for this engagement is [Currency] [Amount]. All costs are inclusive of configuration, training, travel, and 90-day post-launch support. Prices are valid for 30 days from the date of issue.' },
       { type: 'heading', level: 3, text: 'Investment Breakdown' },
@@ -121,6 +131,16 @@ export const SYSTEM_TEMPLATES = [
         'M4 — Go-Live: System in full production use',
       ] },
 
+      { type: 'heading', level: 2, text: 'Our Team' },
+      { type: 'paragraph', text: 'Our implementation team brings together technical architects, digital health specialists, and programme managers with proven experience delivering enterprise software in African contexts.' },
+      { type: 'heading', level: 3, text: 'Team Composition' },
+      { type: 'bulletList', items: [
+        'Daniel Solomon Bangura — Project Sponsor & Client Lead: Executive oversight, stakeholder engagement, and programme governance.',
+        'Karim Sawaneh — Technical Lead: System architecture, configuration, integrations, and go-live support.',
+        'Amadu Yankay Sesay — Training & Change Management Lead: Staff training, onboarding, and sustained adoption.',
+        'Sahr Chanyama Pessima — Data & Reporting Lead: Analytics setup, dashboard configuration, and performance monitoring.',
+      ] },
+
       { type: 'heading', level: 2, text: 'Budget & Investment' },
       { type: 'paragraph', text: 'One-time implementation fee: [Currency] [Amount]. Optional monthly support retainer: [Amount]/month. All prices are valid for 30 days from date of issue.' },
       { type: 'heading', level: 3, text: 'Payment Schedule' },
@@ -178,6 +198,16 @@ export const SYSTEM_TEMPLATES = [
         'M4 — Final Report: Evaluation findings and lessons learned documented',
       ] },
 
+      { type: 'heading', level: 2, text: 'Our Team' },
+      { type: 'paragraph', text: 'Nexa-Flow brings a multidisciplinary team with a track record of delivering evidence-based digital health programmes in collaboration with WHO, Ministry of Health, AFENET, CDC, and major bilateral donors.' },
+      { type: 'heading', level: 3, text: 'Team Composition' },
+      { type: 'bulletList', items: [
+        'Daniel Solomon Bangura — CEO & Principal Investigator: Strategic leadership, government engagement, donor relations, and programme oversight.',
+        'Karim Sawaneh — CTO & Technical Architect: Platform design, data systems implementation, and offline-first solutions for low-resource settings.',
+        'Amadu Yankay Sesay — Senior Digital Health Specialist: Government alignment, capacity building, and health systems strengthening.',
+        'Sahr Chanyama Pessima — M&E Manager: Theory of Change design, data collection frameworks, and impact dashboards for donor reporting.',
+      ] },
+
       { type: 'heading', level: 2, text: 'Budget & Investment' },
       { type: 'paragraph', text: 'Total funding requested: [Currency] [Amount] over [X] months. Budget is structured to maximise direct programme spend (>70%) while ensuring adequate M&E and overhead.' },
       { type: 'heading', level: 3, text: 'Budget Overview' },
@@ -222,6 +252,15 @@ export const SYSTEM_TEMPLATES = [
         'Phase 1: Discovery and planning',
         'Phase 2: Core delivery',
         'Phase 3: Review and handover',
+      ] },
+
+      { type: 'heading', level: 2, text: 'Our Team' },
+      { type: 'paragraph', text: 'Our team combines strategic, technical, and operational expertise to deliver this engagement with quality and accountability at every stage.' },
+      { type: 'heading', level: 3, text: 'Team Composition' },
+      { type: 'bulletList', items: [
+        '[Lead Name] — [Role]: Primary point of contact and engagement lead.',
+        '[Technical Lead] — [Role]: Responsible for delivery quality and technical outputs.',
+        '[Specialist] — [Role]: Subject matter expertise relevant to this scope.',
       ] },
 
       { type: 'heading', level: 2, text: 'Budget & Investment' },
@@ -275,6 +314,16 @@ export const SYSTEM_TEMPLATES = [
 
       { type: 'heading', level: 2, text: 'Expected Outcomes' },
       { type: 'bulletList', items: ['Outcome 1 — measurable target', 'Outcome 2 — measurable target', 'Outcome 3 — measurable target'] },
+
+      { type: 'heading', level: 2, text: 'Our Team' },
+      { type: 'paragraph', text: 'Nexa-Flow brings executive leadership, technical depth, and on-the-ground programme experience to this partnership — ensuring credible co-delivery from day one.' },
+      { type: 'heading', level: 3, text: 'Team Composition' },
+      { type: 'bulletList', items: [
+        'Daniel Solomon Bangura — CEO: Partnership governance, strategic alignment, and senior relationship management.',
+        'Karim Sawaneh — CTO: Technical integration, platform interoperability, and joint system design.',
+        'Amadu Yankay Sesay — Executive Director: Joint programme design, stakeholder engagement, and capacity building.',
+        'Sahr Chanyama Pessima — M&E Manager: Shared monitoring frameworks, joint reporting, and impact measurement.',
+      ] },
 
       { type: 'heading', level: 2, text: 'Terms & Conditions' },
       { type: 'paragraph', text: 'Initial partnership term: [X months], commencing on the date of MOU signing. Either party may withdraw with 30 days written notice. All IP created jointly will be co-owned unless otherwise agreed in the MOU.' },
