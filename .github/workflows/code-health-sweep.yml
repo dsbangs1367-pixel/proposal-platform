@@ -1,0 +1,141 @@
+# Weekly proactive whole-codebase scan (frontend-only variant: no Python).
+# Sibling to anti-pattern-check.yml. Posts a Slack summary to
+# ${{ secrets.SLACK_HEALTH_WEBHOOK }} (set this secret once in repo
+# Settings → Secrets and variables → Actions). Never fails — informational.
+name: Weekly Code Health Sweep
+
+on:
+  schedule:
+    # Sunday 09:07 GMT — off-minute to avoid the every-platform :00 collision
+    - cron: "7 9 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: code-health-sweep
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    name: Whole-codebase anti-pattern + dependency sweep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Anti-pattern grep across the whole tree
+        id: grep
+        shell: bash
+        run: |
+          set +e
+          # Source dirs to scan — fall back gracefully when one is absent.
+          dirs=""
+          [ -d src ] && dirs="$dirs src"
+          [ -d app ] && dirs="$dirs app"
+          [ -d components ] && dirs="$dirs components"
+          [ -d pages ] && dirs="$dirs pages"
+          [ -z "$dirs" ] && dirs="."
+
+          rq_isloading=$(grep -rnE '\bisLoading\b' $dirs 2>/dev/null \
+                          | grep -vE '//[^\n]*isLoading' \
+                          | grep -E '(RequireAuth|useAuth|AuthGuard|ProtectedRoute|currentUser)' \
+                          | wc -l)
+
+          consoles=$(grep -rnE '\bconsole\.(log|debug)\(' $dirs 2>/dev/null \
+                     | grep -vE '\.(test|spec)\.(ts|tsx|js|jsx)' \
+                     | grep -vE '//[^\n]*console\.' \
+                     | wc -l)
+
+          urls=$(grep -rnE '"https?://[^"]+"' $dirs 2>/dev/null \
+                 | grep -vE '\.(test|spec)\.(ts|tsx|js|jsx)' \
+                 | grep -vE '(localhost|127\.0\.0\.1|example\.com|placeholder|TODO|FIXME)' \
+                 | grep -vE '//[^\n]*http' \
+                 | wc -l)
+
+          echo "rq_isloading=$rq_isloading" >> "$GITHUB_OUTPUT"
+          echo "consoles=$consoles" >> "$GITHUB_OUTPUT"
+          echo "urls=$urls" >> "$GITHUB_OUTPUT"
+
+      - name: ESLint summary
+        id: eslint
+        shell: bash
+        run: |
+          set +e
+          count="na"
+          if [ -f package.json ] && jq -e '.scripts.lint' package.json > /dev/null 2>&1; then
+            npm ci --silent 2>/dev/null
+            n=$(npm run lint --silent 2>&1 | grep -cE '(error|warning)\s' || echo 0)
+            [[ "$n" =~ ^[0-9]+$ ]] && count="$n" || count="0"
+          fi
+          echo "eslint_count=$count" >> "$GITHUB_OUTPUT"
+
+      - name: npm audit (high+critical only)
+        id: npmaudit
+        shell: bash
+        run: |
+          set +e
+          count="na"
+          if [ -f package.json ]; then
+            npm audit --json > /tmp/npmaudit.json 2>/dev/null
+            n=$(python3 -c 'import json; d=json.load(open("/tmp/npmaudit.json")); m=d.get("metadata",{}).get("vulnerabilities",{}); print((m.get("high") or 0) + (m.get("critical") or 0))' 2>/dev/null)
+            [[ "$n" =~ ^[0-9]+$ ]] && count="$n" || count="0"
+          fi
+          echo "high_critical=$count" >> "$GITHUB_OUTPUT"
+
+      - name: Build Slack summary
+        id: summary
+        shell: bash
+        env:
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RQ: ${{ steps.grep.outputs.rq_isloading }}
+          CONSOLES: ${{ steps.grep.outputs.consoles }}
+          URLS: ${{ steps.grep.outputs.urls }}
+          ESLINT: ${{ steps.eslint.outputs.eslint_count }}
+          NPMVULN: ${{ steps.npmaudit.outputs.high_critical }}
+        run: |
+          python3 - <<'PY' > /tmp/slack.json
+          import json, os
+          rq    = int(os.environ.get("RQ", 0))
+          cons  = int(os.environ.get("CONSOLES", 0))
+          urls  = int(os.environ.get("URLS", 0))
+          eslnt = os.environ.get("ESLINT", "na")
+          npmv  = os.environ.get("NPMVULN", "na")
+          repo  = os.environ.get("REPO", "?")
+          run_url = os.environ.get("RUN_URL", "?")
+
+          def emo(n):
+              try: n = int(n)
+              except: return ":grey_question:"
+              return ":white_check_mark:" if n == 0 else (":warning:" if n < 5 else ":x:")
+
+          lines = [
+              f"*Weekly Code Health Sweep — `{repo}`*",
+              "",
+              f"{emo(rq)}  React Query `isLoading` on auth guards:  *{rq}*",
+              f"{emo(cons)}  Stray `console.log` / `console.debug`:  *{cons}*",
+              f"{emo(urls)}  Hardcoded URLs in source:  *{urls}*",
+              f"{emo(0 if str(npmv) == 'na' else npmv)}  npm audit high+critical:  *{npmv}*",
+              f":information_source:  ESLint findings: *{eslnt}*",
+              "",
+              f"<{run_url}|Open run logs>",
+          ]
+          payload = {"text": "\n".join(lines)}
+          print(json.dumps(payload))
+          PY
+
+      - name: Post to Slack
+        if: ${{ env.WEBHOOK != '' }}
+        env:
+          WEBHOOK: ${{ secrets.SLACK_HEALTH_WEBHOOK }}
+        shell: bash
+        run: |
+          curl -s -X POST -H 'Content-Type: application/json' \
+            --data @/tmp/slack.json "$WEBHOOK" | head -c 200
+          echo ""

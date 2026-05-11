@@ -1,0 +1,139 @@
+# Comment-only PR check that grep-scans the diff for known anti-patterns.
+# Frontend-only variant: skips backend Python patterns from the LMIS/Welbodi
+# version. Posts a single sticky comment per PR; never fails the build.
+name: Anti-Pattern Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: antipattern-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Scan diff for known anti-patterns
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute diff scope
+        id: diff
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only "$base".."$head" > /tmp/changed.txt
+          git diff "$base".."$head" > /tmp/diff.txt
+
+      - name: Scan for anti-patterns
+        id: scan
+        shell: bash
+        run: |
+          set +e
+          findings=""
+          add_finding() {
+            findings="${findings}$(printf '\n\n---\n\n### %s\n%s\n\n```\n%s\n```' "$1" "$2" "$3")"
+          }
+
+          # 1. React Query v5: isLoading on auth-guard contexts (LMIS /settings regression)
+          # Excludes lines where // appears before isLoading on the same line —
+          # explanatory comments referencing the historical bug shouldn't fire.
+          rq=$(grep -nE '^\+.*\bisLoading\b' /tmp/diff.txt 2>/dev/null \
+                | grep -vE '//[^\n]*isLoading' \
+                | grep -E '(RequireAuth|useAuth|AuthGuard|ProtectedRoute|currentUser)' \
+                | head -5)
+          if [ -n "$rq" ]; then
+            add_finding \
+              "React Query v5 — isLoading on auth guard" \
+              "On initial mount \`isLoading=false, data=undefined\` for one tick — auth guards leak unauthenticated users through. Use \`isPending\` instead. Bit LMIS \`/settings\` previously." \
+              "$rq"
+          fi
+
+          # 2. console.log left in non-test code
+          consoles=$(grep -nE '^\+.*\bconsole\.(log|debug)\(' /tmp/diff.txt 2>/dev/null \
+                     | grep -vE '\.(test|spec)\.(ts|tsx|js|jsx)' \
+                     | grep -vE '//[^\n]*console\.' \
+                     | head -5)
+          if [ -n "$consoles" ]; then
+            add_finding \
+              "console.log committed to non-test code" \
+              "Stray \`console.log\`/\`console.debug\` calls leak diagnostics into production bundles. Remove or gate behind a debug flag." \
+              "$consoles"
+          fi
+
+          # 3. Hardcoded http:// URL in source (env-var leak risk)
+          urls=$(grep -nE '^\+.*"https?://[^"]+"' /tmp/diff.txt 2>/dev/null \
+                 | grep -vE '\.(test|spec)\.(ts|tsx|js|jsx)' \
+                 | grep -vE '(localhost|127\.0\.0\.1|example\.com|placeholder|TODO|FIXME)' \
+                 | grep -vE '//[^\n]*http' \
+                 | head -5)
+          if [ -n "$urls" ]; then
+            add_finding \
+              "Hardcoded URL in source" \
+              "Production URL appears to be hardcoded. Move to an env var (\`VITE_*\` / \`NEXT_PUBLIC_*\` / \`EXPO_PUBLIC_*\`) so staging and prod can diverge without a rebuild." \
+              "$urls"
+          fi
+
+          # Build the comment body with one-line-per-echo so no multi-line
+          # string escapes the YAML block scalar's indentation.
+          if [ -z "$findings" ]; then
+            {
+              echo "## Anti-Pattern Check"
+              echo ""
+              echo "No known anti-patterns detected in this diff. ✅"
+              echo ""
+              echo "_Scanned for: React Query \`isLoading\` on auth guards, stray console.log, hardcoded URLs._"
+              echo "_Auto-generated; see Daniel's \`feedback_*\` memories for context._"
+            } > /tmp/comment.md
+          else
+            {
+              echo "## Anti-Pattern Check"
+              echo ""
+              echo "The diff matches one or more known anti-patterns. Review before merging — these are warnings, not blockers.${findings}"
+              echo ""
+              echo "---"
+              echo "_Auto-generated; see Daniel's \`feedback_*\` memories for the full context behind each rule._"
+            } > /tmp/comment.md
+          fi
+
+      - name: Upsert sticky comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('/tmp/comment.md', 'utf8');
+            const marker = '## Anti-Pattern Check';
+            const comments = await github.paginate(
+              github.rest.issues.listComments,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                per_page: 100,
+              },
+            );
+            const existing = comments.find(c =>
+              c.user && c.user.type === 'Bot' && c.body && c.body.includes(marker),
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
