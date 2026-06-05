@@ -8,11 +8,11 @@ import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
 import { SignaturePad } from '@/components/proposal/signature-pad'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import type { Proposal, Signature, Profile } from '@/lib/types'
+import type { PublicProposal, Signature, Profile } from '@/lib/types'
 import { CheckCircle, Download, Phone, Globe } from 'lucide-react'
 
 interface Props {
-  proposal: Proposal
+  proposal: PublicProposal
   signature: Signature | null
   senderProfile: Profile | null
 }
@@ -41,7 +41,7 @@ export function ClientProposalView({ proposal, signature: initialSig, senderProf
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        proposalId: proposal.id,
+        token: proposal.public_token,
         signerName: data.signerName,
         signerEmail: data.signerEmail,
         signatureData: data.signatureData,
