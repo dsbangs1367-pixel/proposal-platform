@@ -30,6 +30,12 @@ export interface Proposal {
   updated_at: string
 }
 
+// The public /p/[token] page only ever receives these proposal fields (see the
+// get_public_proposal RPC in migration 004). user_id / client_email / updated_at
+// are deliberately NOT exposed to the client — keep them out of this shape so the
+// type can't lie about what reaches the browser.
+export type PublicProposal = Omit<Proposal, 'user_id' | 'client_email' | 'updated_at'>
+
 export interface Signature {
   id: string
   proposal_id: string
