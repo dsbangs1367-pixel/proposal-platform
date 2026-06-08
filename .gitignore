@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 *.pdf
+
+# Track the PRD deliverable (overrides *.pdf above)
+!docs/PRD.pdf
