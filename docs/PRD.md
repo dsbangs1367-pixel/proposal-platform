@@ -1,0 +1,139 @@
+# 1. Document Control
+
+| Field | Value |
+|---|---|
+| Product | ProposalFlow — AI proposal generation with e-sign and payments |
+| Version | 1.0 |
+| Status | Deployed on Vercel — pre-launch (no custom domain yet) |
+| Owner | Daniel Solomon Bangura |
+| Brand | Digital Solution Builders (DSB) |
+| Classification | Confidential — Digital Solution Builders |
+| Governance | T2 (Limited-risk). Profile: `AI Governance/profiles/proposalplatform.md` |
+
+> ProposalFlow is a DSB product. This document records what is built today and the gaps that must close before public launch.
+
+---
+
+# 2. Executive Summary
+
+**What it is.** A SaaS that takes a consultant or agency from blank page to paid contract in one place: it **generates** a structured proposal with AI, lets the client **sign** it on a public page, and **collects payment** — with email and status tracking throughout. Tagline: *Create. Send. Close.*
+
+**Why it exists.** For small consultancies and digital teams in Africa and other emerging markets, the proposal-to-payment journey is fragmented across a word processor, an e-signature tool, an invoicing tool and email. ProposalFlow collapses that into a single flow, with the first draft written by Claude.
+
+**Current status.** Deployed on Vercel with the full flow working end-to-end — AI generation, account management, e-signature, Flutterwave payments, Resend email and Amplitude analytics. It is pre-launch: there is no custom domain yet, and two governance items (Supabase Row-Level Security hardening; a published privacy notice with sub-processor disclosure) must close before onboarding real customers.
+
+**The single ask.** Authorise the pre-launch hardening sprint — confirm RLS isolation across all tenant tables and publish the privacy notice — then attach a custom domain and open a private beta.
+
+---
+
+# 3. Problem & Context
+
+**The problem.** A consultant who wins work still loses days to mechanics: drafting a credible proposal, getting it signed, and getting paid. Each step lives in a different tool, none of them talk to each other, and the client experience is disjointed.
+
+**Why now.** Two shifts make a single integrated flow viable in emerging markets: LLMs can draft a genuinely usable 15-section proposal in seconds, and pan-African payment rails (Flutterwave — card, bank transfer, mobile money) make collecting payment inside the same product practical.
+
+**The approach.** One product that owns the whole arc — generate, send, sign, pay — multi-tenant from day one, with payment data kept entirely out of the AI path.
+
+---
+
+# 4. Users & Personas
+
+**Independent consultant / small agency owner (primary).** Wins a client, needs a professional proposal fast, and wants to be paid without chasing. Often serving NGOs, ministries of health, or donor-funded programmes (WHO, USAID/Gates grantees, EHR/LMIS implementers).
+
+**The client (recipient).** Receives a link, reviews the proposal, signs on a public page, and pays — no account required.
+
+**Team member.** Invited into a workspace to collaborate on proposals and templates.
+
+---
+
+# 5. Scope
+
+| In scope (v1.0, shipped) | Out of scope (v1.0) | Later |
+|---|---|---|
+| AI proposal generation (15 sections) | Multi-currency tax/VAT handling | Custom domain + public launch |
+| Accounts, dashboard, team, templates | CRM / pipeline management | Proposal analytics (open/sign funnels) |
+| E-signature on public client pages | Offline mode | Additional payment providers |
+| Payments (Flutterwave) | White-label theming | Published privacy + sub-processor notice (pre-launch gate) |
+| Transactional email (Resend) | — | RLS hardening verification (pre-launch gate) |
+
+---
+
+# 6. Functional Requirements & Feature Set
+
+### 6.1 AI proposal generation — **Shipped**
+- Claude (Haiku) generates a structured proposal from client inputs (client name, project type, scope, amount, timeline, tone).
+- Produces 15 sections: executive summary, problem statement, core challenges, solution, implementation, phased delivery, milestones, team, budget breakdown, payment schedule, terms, next steps and more.
+
+### 6.2 Authentication & accounts — **Shipped**
+- Supabase Auth (email/password) sign-in / sign-up; multi-tenant user isolation.
+- Dashboard with proposal history; settings; team management and colleague invites.
+
+### 6.3 Proposal management — **Shipped**
+- Draft, edit, delete and duplicate proposals; rich-text editing via TipTap.
+- Status tracking: draft → sent → viewed → signed → paid.
+- Reusable proposal templates.
+
+### 6.4 E-signature & client pages — **Shipped**
+- Public, token-addressed proposal pages (`/p/{public_token}`) where clients view, sign (signature canvas) and pay.
+
+### 6.5 Payments & email — **Shipped**
+- Flutterwave integration (card, bank transfer, mobile money) with currency/amount validation; payment status pending → completed. Payment data is never sent to the AI.
+- Resend for transactional email.
+
+### 6.6 Analytics — **Shipped**
+- Amplitude product telemetry.
+
+---
+
+# 7. Non-Functional Requirements
+
+- **Tenant isolation (P0, pre-launch gate).** Supabase Row-Level Security must be verified across every tenant-scoped table before real customer data lands.
+- **AI trust boundary.** Payment and financial data are excluded from prompts sent to Claude; the model only ever sees proposal content inputs.
+- **Privacy & compliance (P1 — the top priority after the P0 RLS gap).** A privacy notice — including disclosure of Anthropic as an AI sub-processor — must be published before launch.
+- **Performance.** Next.js 16 App Router on Vercel; AI generation returns within a few seconds for a standard proposal.
+- **Reliability.** Email and payment callbacks are idempotent against status transitions.
+
+---
+
+# 8. Technical Architecture
+
+- **Frontend / framework.** Next.js 16 (App Router) + React 19 + TypeScript + Tailwind CSS 4. Note: Next.js 16 has breaking changes from older training data — consult the in-repo docs before changing framework code.
+- **Backend.** Supabase (Postgres + Auth), with RLS as the isolation boundary.
+- **AI.** Anthropic Claude API (`claude-haiku-4-5`) for generation.
+- **Payments.** Flutterwave. **Email.** Resend. **Analytics.** Amplitude.
+- **Hosting.** Vercel. **Brand.** Indigo primary; Geist/Inter typography; FileText wordmark.
+
+---
+
+# 9. Success Metrics & KPIs
+
+| Metric | Target |
+|---|---|
+| Proposal generation latency | < 5 s for a standard 15-section proposal |
+| Generation cost per proposal | Low single-digit cents (Haiku) |
+| Funnel completion (sent → signed → paid) | Establish baseline in private beta |
+| Tenant data isolation | 100% of tables RLS-verified (pre-launch gate) |
+| Payment success rate | ≥ 99% of initiated payments resolve cleanly |
+
+---
+
+# 10. Risks, Roadmap & Appendix
+
+### 10.1 Risks & mitigations
+
+| Risk | Mitigation |
+|---|---|
+| Cross-tenant data exposure | Verify RLS on all tables before launch (P0 gate) |
+| Undisclosed AI sub-processor | Publish privacy notice naming Anthropic before launch (P1 gate) |
+| Sensitive data in prompts | Payment/financial data excluded from the AI path by design |
+| Generated content quality variance | Structured 15-section template + human edit (TipTap) before send |
+
+### 10.2 Roadmap & milestones
+- **Now (shipped):** generation, accounts/team/templates, e-sign, payments, email, analytics — deployed on Vercel.
+- **Pre-launch gate:** RLS verification + published privacy/sub-processor notice.
+- **Next:** custom domain, private beta, proposal analytics.
+- **Later:** additional payment providers, white-label theming.
+
+### 10.3 Appendix
+- **Glossary.** RLS = Supabase Row-Level Security; public token = the unguessable identifier on a client proposal page; sub-processor = a third party (here, Anthropic) processing data on the controller's behalf.
+- **Source docs.** Project `CLAUDE.md`; governance profile `AI Governance/profiles/proposalplatform.md`.
