@@ -21,7 +21,7 @@
 
 **Why it exists.** For small consultancies and digital teams in Africa and other emerging markets, the proposal-to-payment journey is fragmented across a word processor, an e-signature tool, an invoicing tool and email. ProposalFlow collapses that into a single flow, with the first draft written by Claude.
 
-**Current status (2026-08-02).** Deployed on Vercel with the core flow working — AI generation, account management, proposal management and e-signature. Two pieces of the arc are not live: the client-page payment section was removed on 2026-04-06 (the payment rail was not available in Sierra Leone; the Flutterwave backend integration remains in the repo) and email sending was stubbed to no-ops the same day (Resend not installed). Sentry error tracking shipped 2026-04-29; Amplitude wiring is in progress in the working tree, uncommitted. The RLS hardening fix (DIG-11, 2026-06-05) is code-complete on branch `fix/dig-11-rls-hardening` but not yet merged to `main`. It is pre-launch: there is no custom domain yet, and two governance items (Supabase Row-Level Security hardening; a published privacy notice with sub-processor disclosure) must close before onboarding real customers.
+**Current status (2026-08-02).** Deployed on Vercel with the core flow working — AI generation, account management, proposal management and e-signature. Two pieces of the arc are not live: the client-page payment section was removed on 2026-04-06 (the payment rail was not available in Sierra Leone; the Flutterwave backend integration remains in the repo) and email sending was stubbed to no-ops the same day (Resend not installed). Sentry error tracking shipped 2026-04-29; Amplitude wiring is in progress in the working tree, uncommitted. The RLS hardening fix (DIG-11) was merged to `main` on 2026-06-05 (PR #2 — migration `004_rls_hardening.sql`, route hardening, and a route test suite); the commits still unmerged on `fix/dig-11-rls-hardening` are documentation-only. It is pre-launch: there is no custom domain yet, and two governance items (Supabase Row-Level Security hardening; a published privacy notice with sub-processor disclosure) must close before onboarding real customers.
 
 **The single ask.** Authorise the pre-launch hardening sprint — confirm RLS isolation across all tenant tables and publish the privacy notice — then attach a custom domain and open a private beta.
 
@@ -98,7 +98,7 @@
 | Transactional email (Resend) | Stubbed no-op; SDK not installed | disabled 2026-04-06 |
 | Sentry error tracking + Vitest infra | Shipped | 2026-04-29 |
 | CI: Anti-Pattern Check + Weekly Code Health Sweep workflows | Shipped (last commit on `main`) | 2026-05-11 |
-| RLS enumeration + IDOR fix on public proposal flow (DIG-11) | Code-complete on `fix/dig-11-rls-hardening`; not merged to `main`, not deployed | 2026-06-05 |
+| RLS enumeration + IDOR fix on public proposal flow (DIG-11) | Merged to `main` 2026-06-05 (PR #2); ships with `main` deployments | 2026-06-05 |
 | Amplitude telemetry | Uncommitted working-tree changes only | in progress |
 | Custom domain, privacy/sub-processor notice, private beta | Not started | pre-launch gates open |
 
@@ -106,7 +106,7 @@
 
 # 7. Non-Functional Requirements
 
-- **Tenant isolation (P0, pre-launch gate).** Supabase Row-Level Security must be verified across every tenant-scoped table before real customer data lands. *Status 2026-08-02: the DIG-11 fix (RLS enumeration + IDOR on the public proposal flow) is committed on `fix/dig-11-rls-hardening` (2026-06-05) but not merged or deployed; full-table verification is still open.*
+- **Tenant isolation (P0, pre-launch gate).** Supabase Row-Level Security must be verified across every tenant-scoped table before real customer data lands. *Status 2026-08-03: the DIG-11 fix (RLS enumeration + IDOR on the public proposal flow) merged to `main` on 2026-06-05 via PR #2; full-table RLS verification is still open.*
 - **AI trust boundary.** Payment and financial data are excluded from prompts sent to Claude; the model only ever sees proposal content inputs.
 - **Privacy & compliance (P1 — the top priority after the P0 RLS gap).** A privacy notice — including disclosure of Anthropic as an AI sub-processor — must be published before launch.
 - **Performance.** Next.js 16 App Router on Vercel; AI generation returns within a few seconds for a standard proposal.
@@ -150,7 +150,7 @@
 ### 10.2 Roadmap & milestones
 - **Now (shipped, as of 2026-08-02):** generation, accounts/team/templates, proposal management, e-sign — deployed on Vercel. Sentry error tracking + CI health workflows on `main`.
 - **Not yet live:** in-product payment collection (client UI removed 2026-04-06; backend retained), transactional email (stubbed), Amplitude analytics (uncommitted).
-- **Pre-launch gate:** merge + deploy the DIG-11 RLS fix, then full RLS verification; published privacy/sub-processor notice.
+- **Pre-launch gate:** full RLS verification across all tenant tables (the DIG-11 public-proposal fix merged 2026-06-05); published privacy/sub-processor notice.
 - **Next:** custom domain, private beta, proposal analytics.
 - **Later:** additional payment providers, white-label theming.
 
